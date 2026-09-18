@@ -28,7 +28,7 @@ import { Screen } from '@/ui/components/screen';
 import { SearchResultRow } from '@/ui/components/search-result-row';
 import { t } from '@/ui/i18n';
 import { useAppServices } from '@/ui/providers/app-provider';
-import { getTheme, radius, spacing } from '@/ui/theme/tokens';
+import { getTheme, radius, spacing, type } from '@/ui/theme';
 import { ThemedText } from '@/ui/components/themed-text';
 
 const PAGE_SIZE = 25;
@@ -522,14 +522,14 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: radius.md,
     paddingHorizontal: spacing.md,
-    fontSize: 16,
+    ...type.body,
   },
   saveRow: { flexDirection: 'row', gap: spacing.sm, alignItems: 'center' },
   saveInput: { flex: 1 },
   rowBetween: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  section: { fontSize: 13 },
+  section: { ...type.label },
   filterBlock: { gap: spacing.xs },
-  filterLabel: { fontSize: 12 },
+  filterLabel: { ...type.caption },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   chip: {
     borderWidth: StyleSheet.hairlineWidth,
@@ -537,10 +537,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
   },
-  chipText: { fontSize: 13 },
-  link: { fontSize: 14 },
-  message: { fontSize: 15, textAlign: 'center' },
-  error: { fontSize: 14 },
+  chipText: { ...type.label },
+  link: { ...type.subhead },
+  message: { ...type.subhead, textAlign: 'center' },
+  error: { ...type.subhead },
   center: { alignItems: 'center', gap: spacing.md, paddingVertical: spacing.xl },
   footer: { paddingVertical: spacing.lg, alignItems: 'center' },
 });

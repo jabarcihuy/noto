@@ -15,7 +15,7 @@ import type { Tag } from '@/features/tags/domain/tag';
 import { PrimaryButton } from '@/ui/components/primary-button';
 import { t } from '@/ui/i18n';
 import { useAppServices } from '@/ui/providers/app-provider';
-import { getTheme, radius, spacing } from '@/ui/theme/tokens';
+import { getTheme, radius, spacing, type } from '@/ui/theme';
 import { ThemedText } from '@/ui/components/themed-text';
 
 type TagsState = { tags: Tag[]; allTags: Tag[] };
@@ -199,8 +199,8 @@ export default function NoteTagsScreen() {
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   content: { padding: spacing.lg, gap: spacing.sm },
-  section: { fontSize: 13, marginTop: spacing.sm },
-  message: { fontSize: 14 },
+  section: { ...type.label, marginTop: spacing.sm },
+  message: { ...type.subhead },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   chip: {
     borderRadius: radius.sm,
@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: 'transparent',
   },
-  chipText: { fontSize: 13 },
+  chipText: { ...type.label },
   addRow: { flexDirection: 'row', gap: spacing.sm, alignItems: 'center', marginTop: spacing.sm },
   input: {
     flex: 1,
@@ -217,9 +217,9 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: radius.md,
     paddingHorizontal: spacing.md,
-    fontSize: 16,
+    ...type.body,
   },
-  error: { fontSize: 14 },
+  error: { ...type.subhead },
   center: {
     flex: 1,
     alignItems: 'center',

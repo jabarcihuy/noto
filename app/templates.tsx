@@ -13,7 +13,7 @@ import type { Template } from '@/features/templates';
 import { PrimaryButton } from '@/ui/components/primary-button';
 import { t } from '@/ui/i18n';
 import { useAppServices } from '@/ui/providers/app-provider';
-import { getTheme, radius, spacing } from '@/ui/theme/tokens';
+import { getTheme, radius, spacing, type } from '@/ui/theme';
 import { ThemedText } from '@/ui/components/themed-text';
 
 type State =
@@ -131,16 +131,16 @@ export default function TemplatesScreen() {
 const styles = StyleSheet.create({
   safe: { flex: 1 },
   content: { padding: spacing.lg, gap: spacing.md, paddingBottom: spacing.xxl },
-  title: { fontSize: 28, lineHeight: 34 },
-  intro: { fontSize: 14 },
+  title: { ...type.display },
+  intro: { ...type.subhead },
   row: {
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: radius.md,
     padding: spacing.lg,
     gap: spacing.xs,
   },
-  name: { fontSize: 16 },
-  description: { fontSize: 14 },
+  name: { ...type.body },
+  description: { ...type.subhead },
   center: { alignItems: 'center', gap: spacing.md, paddingVertical: spacing.xl },
-  message: { fontSize: 15, textAlign: 'center' },
+  message: { ...type.subhead, textAlign: 'center' },
 });

@@ -8,7 +8,7 @@ import { InfoCard } from '@/ui/components/info-card';
 import { Screen } from '@/ui/components/screen';
 import { t } from '@/ui/i18n';
 import { useAppServices } from '@/ui/providers/app-provider';
-import { getTheme, spacing } from '@/ui/theme/tokens';
+import { getTheme, spacing, type } from '@/ui/theme';
 import { ThemedText } from '@/ui/components/themed-text';
 
 type Busy = 'none' | 'reconcile' | 'export' | 'importFile' | 'importFolder' | 'diagnostics';
@@ -218,7 +218,7 @@ export default function SettingsScreen() {
 }
 
 const styles = StyleSheet.create({
-  section: { fontSize: 13, marginTop: spacing.md },
-  stage: { fontSize: 14 },
-  link: { fontSize: 15, marginTop: spacing.sm },
+  section: { ...type.label, marginTop: spacing.md },
+  stage: { ...type.subhead },
+  link: { ...type.subhead, marginTop: spacing.sm },
 });

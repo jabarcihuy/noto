@@ -16,7 +16,7 @@ import { InfoCard } from '@/ui/components/info-card';
 import { PrimaryButton } from '@/ui/components/primary-button';
 import { t } from '@/ui/i18n';
 import { useAppServices } from '@/ui/providers/app-provider';
-import { getTheme, radius, spacing } from '@/ui/theme/tokens';
+import { getTheme, radius, spacing, type } from '@/ui/theme';
 import { ThemedText } from '@/ui/components/themed-text';
 
 type Mode = 'text' | 'url' | 'share';
@@ -289,22 +289,22 @@ export default function CaptureScreen() {
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   body: { flex: 1, padding: spacing.lg, gap: spacing.sm },
-  label: { fontSize: 13 },
-  template: { fontSize: 13 },
-  hint: { fontSize: 13 },
+  label: { ...type.label },
+  template: { ...type.label },
+  hint: { ...type.label },
   titleInput: {
     minHeight: 48,
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: radius.md,
     paddingHorizontal: spacing.md,
-    fontSize: 18,
+    ...type.heading,
   },
   urlInput: {
     minHeight: 48,
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: radius.md,
     paddingHorizontal: spacing.md,
-    fontSize: 16,
+    ...type.body,
   },
   contentInput: {
     flex: 1,
@@ -312,8 +312,7 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: radius.md,
     padding: spacing.md,
-    fontSize: 16,
-    lineHeight: 24,
+    ...type.body,
   },
   shareList: { gap: spacing.sm },
   shareRow: {
@@ -322,9 +321,9 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     gap: spacing.xs,
   },
-  shareKind: { fontSize: 12 },
-  shareValue: { fontSize: 15 },
-  error: { fontSize: 14 },
+  shareKind: { ...type.caption },
+  shareValue: { ...type.subhead },
+  error: { ...type.subhead },
   actions: {
     flexDirection: 'row',
     justifyContent: 'flex-end',

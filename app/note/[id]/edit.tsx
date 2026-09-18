@@ -30,7 +30,7 @@ import { PrimaryButton } from '@/ui/components/primary-button';
 import { formatDateTime } from '@/ui/format/date';
 import { t } from '@/ui/i18n';
 import { useAppServices } from '@/ui/providers/app-provider';
-import { getTheme, radius, spacing } from '@/ui/theme/tokens';
+import { getTheme, radius, spacing, type } from '@/ui/theme';
 import { ThemedText } from '@/ui/components/themed-text';
 
 type LoadState = 'loading' | 'ready' | 'notFound' | 'error';
@@ -366,14 +366,14 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   body: { flex: 1, padding: spacing.lg, gap: spacing.sm },
   statusRow: { alignItems: 'flex-end' },
-  status: { fontSize: 12 },
-  label: { fontSize: 13 },
+  status: { ...type.caption },
+  label: { ...type.label },
   titleInput: {
     minHeight: 48,
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: radius.md,
     paddingHorizontal: spacing.md,
-    fontSize: 18,
+    ...type.heading,
   },
   contentInput: {
     flex: 1,
@@ -381,8 +381,7 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: radius.md,
     padding: spacing.md,
-    fontSize: 16,
-    lineHeight: 24,
+    ...type.body,
   },
   suggestions: {
     borderWidth: StyleSheet.hairlineWidth,
@@ -391,13 +390,13 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
     gap: spacing.xs,
   },
-  suggestLabel: { fontSize: 12 },
-  suggestHint: { fontSize: 12 },
+  suggestLabel: { ...type.caption },
+  suggestHint: { ...type.caption },
   suggestList: { maxHeight: 160 },
   suggestRow: { paddingVertical: spacing.sm },
-  suggestTitle: { fontSize: 15 },
-  suggestMeta: { fontSize: 12 },
-  error: { fontSize: 14 },
+  suggestTitle: { ...type.subhead },
+  suggestMeta: { ...type.caption },
+  error: { ...type.subhead },
   actions: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
@@ -411,5 +410,5 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     padding: spacing.xl,
   },
-  message: { fontSize: 15, textAlign: 'center' },
+  message: { ...type.subhead, textAlign: 'center' },
 });

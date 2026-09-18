@@ -14,7 +14,7 @@ import type { Note } from '@/features/notes/domain/note';
 import { formatDateTime } from '@/ui/format/date';
 import { t } from '@/ui/i18n';
 import { useAppServices } from '@/ui/providers/app-provider';
-import { getTheme, radius, spacing } from '@/ui/theme/tokens';
+import { getTheme, radius, spacing, type } from '@/ui/theme';
 import { ThemedText } from '@/ui/components/themed-text';
 
 type Candidate = Note & { notebookName: string | null };
@@ -136,8 +136,8 @@ export default function LinkTargetScreen() {
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   content: { padding: spacing.lg, gap: spacing.sm },
-  intro: { fontSize: 14 },
-  target: { fontSize: 16 },
+  intro: { ...type.subhead },
+  target: { ...type.body },
   row: {
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: radius.md,
@@ -145,10 +145,10 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     gap: 2,
   },
-  rowTitle: { fontSize: 16 },
-  rowMeta: { fontSize: 12 },
+  rowTitle: { ...type.body },
+  rowMeta: { ...type.caption },
   cancel: { paddingVertical: spacing.md, alignItems: 'center' },
-  cancelLabel: { fontSize: 15 },
+  cancelLabel: { ...type.subhead },
   center: {
     flex: 1,
     alignItems: 'center',
@@ -156,5 +156,5 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     padding: spacing.xl,
   },
-  message: { fontSize: 15, textAlign: 'center' },
+  message: { ...type.subhead, textAlign: 'center' },
 });

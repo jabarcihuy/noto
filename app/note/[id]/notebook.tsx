@@ -13,7 +13,7 @@ import {
 import type { Notebook } from '@/features/notebooks/domain/notebook';
 import { t } from '@/ui/i18n';
 import { useAppServices } from '@/ui/providers/app-provider';
-import { getTheme, spacing } from '@/ui/theme/tokens';
+import { getTheme, spacing, type } from '@/ui/theme';
 import { ThemedText } from '@/ui/components/themed-text';
 
 type PickerState = {
@@ -127,8 +127,8 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
-  rowTitle: { fontSize: 16 },
-  current: { fontSize: 13 },
+  rowTitle: { ...type.body },
+  current: { ...type.label },
   center: {
     flex: 1,
     alignItems: 'center',
@@ -136,5 +136,5 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     padding: spacing.xl,
   },
-  message: { fontSize: 15, textAlign: 'center' },
+  message: { ...type.subhead, textAlign: 'center' },
 });

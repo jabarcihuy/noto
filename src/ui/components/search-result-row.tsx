@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, useColorScheme } from 'react-native';
 import { parseSnippet, type SearchResultItem } from '@/features/search';
 import { contentPreview, formatDateTime } from '@/ui/format/date';
 import { t } from '@/ui/i18n';
-import { getTheme, spacing } from '@/ui/theme/tokens';
+import { getTheme, spacing, type } from '@/ui/theme';
 import { ThemedText } from '@/ui/components/themed-text';
 
 type SearchResultRowProps = {
@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     gap: 2,
   },
-  title: { fontSize: 16 },
-  preview: { fontSize: 14, lineHeight: 19 },
-  timestamp: { fontSize: 12, marginTop: 2 },
+  title: { ...type.body },
+  preview: { ...type.subhead },
+  timestamp: { ...type.caption, marginTop: 2 },
 });

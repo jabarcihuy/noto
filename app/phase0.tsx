@@ -6,7 +6,7 @@ import { File, Paths } from 'expo-file-system';
 
 import { runAllPhase0Checks, type CheckResult } from '@/phase0';
 import { t } from '@/ui/i18n';
-import { getTheme, radius, spacing } from '@/ui/theme/tokens';
+import { getTheme, radius, spacing, type } from '@/ui/theme';
 import { ThemedText } from '@/ui/components/themed-text';
 
 function persistResults(collected: CheckResult[]): void {
@@ -125,15 +125,15 @@ export default function Phase0Screen() {
 const styles = StyleSheet.create({
   safe: { flex: 1 },
   content: { padding: spacing.lg, gap: spacing.sm, paddingBottom: spacing.xxl },
-  disclaimer: { fontSize: 14, lineHeight: 20 },
+  disclaimer: { ...type.subhead },
   button: {
     height: 48,
     borderRadius: radius.md,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  buttonLabel: { color: '#FFFFFF', fontSize: 16 },
-  summary: { fontSize: 15, marginTop: spacing.sm },
+  buttonLabel: { color: '#FFFFFF', ...type.body },
+  summary: { ...type.subhead, marginTop: spacing.sm },
   row: {
     flexDirection: 'row',
     gap: spacing.md,
@@ -141,8 +141,8 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     padding: spacing.md,
   },
-  badge: { fontSize: 12, width: 44 },
+  badge: { ...type.caption, width: 44 },
   rowBody: { flex: 1, gap: 2 },
-  name: { fontSize: 14 },
-  detail: { fontSize: 12, lineHeight: 17 },
+  name: { ...type.subhead },
+  detail: { ...type.caption },
 });

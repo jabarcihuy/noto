@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { initializeAppDatabase, type AppServices } from '@/composition';
 import { t } from '@/ui/i18n';
-import { getTheme, radius, spacing } from '@/ui/theme/tokens';
+import { getTheme, radius, spacing, type } from '@/ui/theme';
 import { ThemedText } from '@/ui/components/themed-text';
 
 type AppState =
@@ -105,8 +105,8 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     padding: spacing.xl,
   },
-  title: { fontSize: 22, textAlign: 'center' },
-  message: { fontSize: 15, textAlign: 'center' },
+  title: { ...type.title, textAlign: 'center' },
+  message: { ...type.subhead, textAlign: 'center' },
   retry: {
     minHeight: 48,
     borderRadius: radius.md,
@@ -114,5 +114,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: spacing.xl,
   },
-  retryLabel: { color: '#FFFFFF', fontSize: 16 },
+  retryLabel: { color: '#FFFFFF', ...type.body },
 });

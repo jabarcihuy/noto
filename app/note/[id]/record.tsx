@@ -8,7 +8,7 @@ import { PrimaryButton } from '@/ui/components/primary-button';
 import { formatClock } from '@/ui/format/duration';
 import { t } from '@/ui/i18n';
 import { useAppServices } from '@/ui/providers/app-provider';
-import { getTheme, radius, spacing } from '@/ui/theme/tokens';
+import { getTheme, radius, spacing, type } from '@/ui/theme';
 import { ThemedText } from '@/ui/components/themed-text';
 
 type Phase = 'idle' | 'recording' | 'ready' | 'saving' | 'error';
@@ -246,7 +246,7 @@ export default function RecordVoiceScreen() {
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   body: { flex: 1, padding: spacing.lg, gap: spacing.md, justifyContent: 'center' },
-  message: { fontSize: 15, textAlign: 'center' },
+  message: { ...type.subhead, textAlign: 'center' },
   recordingRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -254,8 +254,8 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   dot: { width: 12, height: 12, borderRadius: 6 },
-  recordingLabel: { fontSize: 16 },
-  clock: { fontSize: 28, textAlign: 'center' },
+  recordingLabel: { ...type.body },
+  clock: { ...type.display, textAlign: 'center' },
   previewRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -267,8 +267,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
   },
-  previewLabel: { fontSize: 15 },
+  previewLabel: { ...type.subhead },
   actions: { flexDirection: 'row', justifyContent: 'center', gap: spacing.md },
   linkButton: { alignItems: 'center', paddingVertical: spacing.sm },
-  link: { fontSize: 15 },
+  link: { ...type.subhead },
 });

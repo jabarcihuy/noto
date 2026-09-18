@@ -17,7 +17,7 @@ import { PrimaryButton } from '@/ui/components/primary-button';
 import { contentPreview, formatDateTime } from '@/ui/format/date';
 import { t } from '@/ui/i18n';
 import { useAppServices } from '@/ui/providers/app-provider';
-import { getTheme, radius, spacing } from '@/ui/theme/tokens';
+import { getTheme, radius, spacing, type } from '@/ui/theme';
 import { ThemedText } from '@/ui/components/themed-text';
 
 type DetailState =
@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: radius.md,
     paddingHorizontal: spacing.md,
-    fontSize: 16,
+    ...type.body,
   },
   action: {
     flex: 1,
@@ -271,7 +271,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  actionLabel: { fontSize: 15 },
+  actionLabel: { ...type.subhead },
   list: { paddingHorizontal: spacing.lg, paddingBottom: spacing.xl },
   noteRow: {
     flexDirection: 'row',
@@ -281,11 +281,11 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   noteMain: { flex: 1, gap: 2 },
-  noteTitle: { fontSize: 16 },
-  notePreview: { fontSize: 14 },
-  noteTime: { fontSize: 12, marginTop: 2 },
+  noteTitle: { ...type.body },
+  notePreview: { ...type.subhead },
+  noteTime: { ...type.caption, marginTop: 2 },
   remove: { paddingHorizontal: spacing.sm, paddingVertical: spacing.sm },
-  removeLabel: { fontSize: 13 },
+  removeLabel: { ...type.label },
   center: {
     flex: 1,
     alignItems: 'center',
@@ -293,5 +293,5 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     padding: spacing.xl,
   },
-  message: { fontSize: 15, textAlign: 'center' },
+  message: { ...type.subhead, textAlign: 'center' },
 });

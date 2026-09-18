@@ -15,7 +15,7 @@ import type { Notebook } from '@/features/notebooks/domain/notebook';
 import { PrimaryButton } from '@/ui/components/primary-button';
 import { t } from '@/ui/i18n';
 import { useAppServices } from '@/ui/providers/app-provider';
-import { getTheme, radius, spacing } from '@/ui/theme/tokens';
+import { getTheme, radius, spacing, type } from '@/ui/theme';
 import { ThemedText } from '@/ui/components/themed-text';
 
 type NotebookState =
@@ -155,7 +155,7 @@ export default function NotebooksScreen() {
 const styles = StyleSheet.create({
   safe: { flex: 1 },
   header: { paddingHorizontal: spacing.lg, paddingTop: spacing.lg, gap: spacing.sm },
-  title: { fontSize: 28, lineHeight: 34 },
+  title: { ...type.display },
   createRow: { flexDirection: 'row', gap: spacing.sm, alignItems: 'center' },
   input: {
     flex: 1,
@@ -163,12 +163,12 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: radius.md,
     paddingHorizontal: spacing.md,
-    fontSize: 16,
+    ...type.body,
   },
-  error: { fontSize: 14 },
+  error: { ...type.subhead },
   list: { paddingHorizontal: spacing.lg, paddingBottom: spacing.xl },
   row: { paddingVertical: spacing.md, borderBottomWidth: StyleSheet.hairlineWidth },
-  rowTitle: { fontSize: 16 },
+  rowTitle: { ...type.body },
   center: {
     flex: 1,
     alignItems: 'center',
@@ -176,5 +176,5 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     padding: spacing.xl,
   },
-  message: { fontSize: 15, textAlign: 'center' },
+  message: { ...type.subhead, textAlign: 'center' },
 });

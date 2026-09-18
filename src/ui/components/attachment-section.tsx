@@ -5,7 +5,7 @@ import { useVoicePlayer } from '@/core/platform';
 import type { AttachmentView } from '@/features/attachments';
 import { formatClock } from '@/ui/format/duration';
 import { t } from '@/ui/i18n';
-import { getTheme, radius, spacing } from '@/ui/theme/tokens';
+import { getTheme, radius, spacing, type } from '@/ui/theme';
 import { ThemedText } from '@/ui/components/themed-text';
 
 type AttachmentSectionProps = {
@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
     borderTopWidth: StyleSheet.hairlineWidth,
     gap: spacing.sm,
   },
-  title: { fontSize: 13 },
+  title: { ...type.label },
   addRow: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   addButton: {
     borderWidth: StyleSheet.hairlineWidth,
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
   },
-  addLabel: { fontSize: 14 },
+  addLabel: { ...type.subhead },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -228,11 +228,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
   },
-  playLabel: { fontSize: 14 },
-  progress: { flex: 1, fontSize: 13 },
+  playLabel: { ...type.subhead },
+  progress: { flex: 1, ...type.label },
   rowDelete: { marginLeft: 'auto' },
-  fileName: { flex: 1, fontSize: 14 },
-  delete: { fontSize: 14 },
-  unavailable: { flex: 1, fontSize: 14 },
-  message: { fontSize: 14 },
+  fileName: { flex: 1, ...type.subhead },
+  delete: { ...type.subhead },
+  unavailable: { flex: 1, ...type.subhead },
+  message: { ...type.subhead },
 });

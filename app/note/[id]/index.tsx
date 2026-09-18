@@ -23,7 +23,7 @@ import { toError } from '@/ui/errors';
 import { formatDateTime } from '@/ui/format/date';
 import { t } from '@/ui/i18n';
 import { useAppServices } from '@/ui/providers/app-provider';
-import { getTheme, radius, spacing } from '@/ui/theme/tokens';
+import { getTheme, radius, spacing, type } from '@/ui/theme';
 import { ThemedText } from '@/ui/components/themed-text';
 
 type DetailState =
@@ -478,10 +478,10 @@ export default function NoteDetailScreen() {
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   content: { padding: spacing.lg, gap: spacing.md, paddingBottom: spacing.xl },
-  noteTitle: { fontSize: 22, lineHeight: 28 },
-  body: { fontSize: 16, lineHeight: 24 },
+  noteTitle: { ...type.title },
+  body: { ...type.body },
   timestamps: { gap: 2, marginTop: spacing.md },
-  timestamp: { fontSize: 12 },
+  timestamp: { ...type.caption },
   organization: {
     marginTop: spacing.lg,
     paddingTop: spacing.md,
@@ -489,24 +489,24 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   orgRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
-  orgLabel: { fontSize: 13, width: 84 },
-  orgValue: { fontSize: 14 },
+  orgLabel: { ...type.label, width: 84 },
+  orgValue: { ...type.subhead },
   tagChips: { flex: 1, flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   tagChip: {
-    fontSize: 13,
+    ...type.label,
     borderRadius: radius.sm,
     paddingHorizontal: spacing.sm,
     paddingVertical: 4,
     overflow: 'hidden',
   },
-  manage: { fontSize: 14 },
+  manage: { ...type.subhead },
   backlinks: {
     marginTop: spacing.lg,
     paddingTop: spacing.md,
     borderTopWidth: StyleSheet.hairlineWidth,
     gap: spacing.sm,
   },
-  backlinksTitle: { fontSize: 13 },
+  backlinksTitle: { ...type.label },
   backlinkRow: {
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: radius.sm,
@@ -514,8 +514,8 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
     gap: 2,
   },
-  backlinkTitle: { fontSize: 15 },
-  backlinkMeta: { fontSize: 12 },
+  backlinkTitle: { ...type.subhead },
+  backlinkMeta: { ...type.caption },
   center: {
     flex: 1,
     alignItems: 'center',
@@ -523,7 +523,7 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     padding: spacing.xl,
   },
-  message: { fontSize: 15, textAlign: 'center' },
+  message: { ...type.subhead, textAlign: 'center' },
   retry: {
     minHeight: 48,
     borderRadius: 10,
@@ -531,7 +531,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: spacing.xl,
   },
-  retryLabel: { color: '#FFFFFF', fontSize: 16 },
+  retryLabel: { color: '#FFFFFF', ...type.body },
   actions: {
     flexDirection: 'row',
     gap: spacing.md,
@@ -545,5 +545,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  actionLabel: { color: '#FFFFFF', fontSize: 16 },
+  actionLabel: { color: '#FFFFFF', ...type.body },
 });
