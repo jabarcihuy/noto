@@ -321,6 +321,13 @@ export default function NoteDetailScreen() {
                 <NoteContent
                   content={state.note.content}
                   links={state.links}
+                  attachmentPaths={
+                    new Set(
+                      state.attachments
+                        .filter((view) => view.available)
+                        .map((view) => view.attachment.relativePath),
+                    )
+                  }
                   onPressLink={openLink}
                   style={[styles.body, { color: colors.text }]}
                 />
@@ -441,7 +448,12 @@ export default function NoteDetailScreen() {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  content: { padding: spacing.lg, gap: spacing.md, paddingBottom: spacing.xl },
+  content: {
+    padding: spacing.lg,
+    paddingTop: spacing.xl,
+    gap: spacing.lg,
+    paddingBottom: spacing.xxl,
+  },
   noteTitle: { ...type.title },
   body: { ...type.body },
   tagChips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },

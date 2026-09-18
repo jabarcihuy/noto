@@ -457,7 +457,7 @@ export default function SearchScreen() {
         <ThemedText style={[styles.error, { color: colors.danger }]}>{saveError}</ThemedText>
       ) : null}
       {savedSearches.length === 0 ? (
-        <ThemedText style={[styles.message, { color: colors.textMuted }]}>
+        <ThemedText variant="caption" color={colors.textFaint}>
           {t('search.savedEmpty')}
         </ThemedText>
       ) : (

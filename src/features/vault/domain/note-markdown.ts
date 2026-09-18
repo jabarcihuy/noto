@@ -94,12 +94,42 @@ export function resolveUniqueFilename(filename: string, taken: ReadonlySet<strin
 
 const ATTACHMENT_REFERENCE = /!?\[[^\]]*\]\(([^)]+)\)/g;
 
-/** Counts Markdown references to `attachments/…` (docs/DATABASE.md §7.2). */
-export function countAttachmentReferences(content: string): number {
-  let count = 0;
+export type AttachmentReference = {
+  /** Vault-relative path as written. */
+  path: string;
+  /** Alt text / label, may be empty. */
+  label: string;
+  image: boolean;
+  raw: string;
+  start: number;
+  end: number;
+};
+
+/**
+ * Attachment references in note content (docs/DATABASE.md §7.2), with source positions so
+ * a renderer can show them as attachments instead of raw Markdown. Only `attachments/…`
+ * paths are returned; ordinary links are left to the wikilink renderer.
+ */
+export function parseAttachmentReferences(content: string): AttachmentReference[] {
+  const references: AttachmentReference[] = [];
   for (const match of content.matchAll(ATTACHMENT_REFERENCE)) {
     const path = match[1]?.trim() ?? '';
-    if (/(^|\/)attachments\//.test(path)) count += 1;
+    if (!/(^|\/)attachments\//.test(path)) continue;
+    const start = match.index ?? 0;
+    const labelMatch = /^(!?)\[([^\]]*)\]/.exec(match[0]);
+    references.push({
+      path,
+      label: labelMatch?.[2] ?? '',
+      image: labelMatch?.[1] === '!',
+      raw: match[0],
+      start,
+      end: start + match[0].length,
+    });
   }
-  return count;
+  return references;
+}
+
+/** Counts Markdown references to `attachments/…` (docs/DATABASE.md §7.2). */
+export function countAttachmentReferences(content: string): number {
+  return parseAttachmentReferences(content).length;
 }

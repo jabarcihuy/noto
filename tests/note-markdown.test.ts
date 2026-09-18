@@ -5,6 +5,7 @@ import type { Note } from '@/features/notes/domain/note';
 import {
   buildExportFilename,
   countAttachmentReferences,
+  parseAttachmentReferences,
   resolveUniqueFilename,
   sanitizeNoteFilename,
   serializeNoteMarkdown,
@@ -95,4 +96,26 @@ test('countAttachmentReferences follows the documented attachment path conventio
     2,
   );
   assert.equal(countAttachmentReferences('[external](https://example.com/a.png)'), 0);
+});
+
+test('attachment references are parsed with positions, labels, and kind', () => {
+  const content =
+    'Teks awal\n\n![foto](attachments/foto.jpg)\n\n[label](attachments/voice.m4a)\n\n[web](https://example.com)';
+  const refs = parseAttachmentReferences(content);
+
+  assert.equal(refs.length, 2);
+  assert.equal(refs[0]?.path, 'attachments/foto.jpg');
+  assert.equal(refs[0]?.label, 'foto');
+  assert.equal(refs[0]?.image, true);
+  assert.equal(content.slice(refs[0]!.start, refs[0]!.end), '![foto](attachments/foto.jpg)');
+
+  assert.equal(refs[1]?.path, 'attachments/voice.m4a');
+  assert.equal(refs[1]?.image, false);
+
+  // Ordinary web links are not attachment references.
+  assert.equal(
+    refs.some((ref) => ref.path.includes('example.com')),
+    false,
+  );
+  assert.equal(countAttachmentReferences(content), 2);
 });
