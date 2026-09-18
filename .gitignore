@@ -15,6 +15,7 @@ expo-env.d.ts
 /skills-lock.json
 
 # local env files
+.env
 .env*.local
 
 # debug
@@ -30,3 +31,13 @@ yarn-error.*
 
 # macOS
 *.pem
+
+# secrets / signing material (never commit)
+*.jks
+*.keystore
+*.p8
+*.p12
+*.key
+*.mobileprovision
+credentials.json
+eas-credentials.json
