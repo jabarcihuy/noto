@@ -20,6 +20,10 @@
         "android.permission.RECORD_AUDIO",
         "android.permission.MODIFY_AUDIO_SETTINGS",
         "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.FOREGROUND_SERVICE",
         "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
       ]
     },
@@ -52,17 +56,8 @@
         {
           "android": {
             "enabled": true,
-            "singleShareMimeTypes": [
-              "text/*",
-              "image/*",
-              "audio/*",
-              "application/*"
-            ],
-            "multipleShareMimeTypes": [
-              "image/*",
-              "audio/*",
-              "application/*"
-            ]
+            "singleShareMimeTypes": ["text/*", "image/*", "audio/*", "application/*"],
+            "multipleShareMimeTypes": ["image/*", "audio/*", "application/*"]
           }
         }
       ],
@@ -78,6 +73,13 @@
         "projectId": "08f0b1a6-bedd-4daf-8937-bca0db219813"
       }
     },
-    "owner": "jabarcihuy"
+    "owner": "jabarcihuy",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/08f0b1a6-bedd-4daf-8937-bca0db219813"
+    },
+    "ios": {}
   }
 }
