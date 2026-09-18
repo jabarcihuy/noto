@@ -1,0 +1,18 @@
+node_modules/
+dist/
+.expo/
+android/
+ios/
+assets/
+
+# Agent skills installed via `npx skills add` are third-party tooling, not app source.
+.agents/
+agent/
+.claude/
+skills-lock.json
+
+# Documentation is hand-authored and kept out of Prettier's scope.
+docs/
+AGENTS.md
+
+package-lock.json

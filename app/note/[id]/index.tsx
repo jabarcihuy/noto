@@ -1,0 +1,542 @@
+import { router, Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { useCallback, useState } from 'react';
+import {
+  ActivityIndicator,
+  Alert,
+  Linking,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  useColorScheme,
+  View,
+} from 'react-native';
+
+import type { AttachmentView } from '@/features/attachments';
+import type { Note } from '@/features/notes/domain/note';
+import type { NoteLink, Wikilink } from '@/features/links';
+import type { Notebook } from '@/features/notebooks/domain/notebook';
+import type { Tag } from '@/features/tags/domain/tag';
+import { countAttachmentReferences } from '@/features/vault/domain/note-markdown';
+import { AttachmentSection } from '@/ui/components/attachment-section';
+import { NoteContent } from '@/ui/components/note-content';
+import { toError } from '@/ui/errors';
+import { formatDateTime } from '@/ui/format/date';
+import { t } from '@/ui/i18n';
+import { useAppServices } from '@/ui/providers/app-provider';
+import { getTheme, radius, spacing } from '@/ui/theme/tokens';
+
+type DetailState =
+  | { status: 'loading' }
+  | {
+      status: 'ready';
+      note: Note;
+      tags: Tag[];
+      notebook: Notebook | null;
+      links: NoteLink[];
+      backlinks: Note[];
+      attachments: AttachmentView[];
+    }
+  | { status: 'notFound' }
+  | { status: 'error'; error: Error };
+
+export default function NoteDetailScreen() {
+  const colors = getTheme(useColorScheme());
+  const services = useAppServices();
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const noteId = String(id);
+
+  const [state, setState] = useState<DetailState>({ status: 'loading' });
+  const [exporting, setExporting] = useState(false);
+  const [attaching, setAttaching] = useState(false);
+
+  const fetchBundle = useCallback(async () => {
+    const note = await services.notes.openNote(noteId);
+    if (!note) return null;
+    const [tags, notebook, links, backlinks, attachments] = await Promise.all([
+      services.tags.listForNote(noteId),
+      note.notebookId ? services.notebooks.getById(note.notebookId) : Promise.resolve(null),
+      services.links.listBySource(noteId),
+      services.links.listBacklinks(noteId),
+      services.attachments.listForNote(noteId),
+    ]);
+    return { note, tags, notebook, links, backlinks, attachments };
+  }, [services, noteId]);
+
+  useFocusEffect(
+    useCallback(() => {
+      let active = true;
+      void (async () => {
+        try {
+          const bundle = await fetchBundle();
+          if (!active) return;
+          setState(bundle ? { status: 'ready', ...bundle } : { status: 'notFound' });
+        } catch (error) {
+          if (active) setState({ status: 'error', error: toError(error) });
+        }
+      })();
+      return () => {
+        active = false;
+      };
+    }, [fetchBundle]),
+  );
+
+  const performExport = useCallback(
+    async (note: Note, tags: Tag[], notebook: Notebook | null) => {
+      setExporting(true);
+      try {
+        const result = await services.exportNote(note, {
+          dialogTitle: t('export.dialogTitle'),
+          tags: tags.map((tag) => tag.name),
+          notebook: notebook?.name ?? null,
+        });
+        if (!result.shared) {
+          Alert.alert(t('export.notSharedTitle'), t('export.notSharedMessage'));
+        }
+      } catch (error) {
+        console.error('[Noto] export note failed', error);
+        Alert.alert(t('export.errorTitle'), t('export.errorMessage'));
+      } finally {
+        setExporting(false);
+      }
+    },
+    [services],
+  );
+
+  const exportCurrentNote = useCallback(() => {
+    if (state.status !== 'ready') return;
+    const { note, tags, notebook } = state;
+    if (countAttachmentReferences(note.content) > 0) {
+      Alert.alert(t('export.attachmentTitle'), t('export.attachmentMessage'), [
+        { text: t('common.cancel'), style: 'cancel' },
+        { text: t('export.continue'), onPress: () => void performExport(note, tags, notebook) },
+      ]);
+      return;
+    }
+    void performExport(note, tags, notebook);
+  }, [state, performExport]);
+
+  const remove = useCallback(() => {
+    Alert.alert(t('note.deleteTitle'), t('note.deleteMessage'), [
+      { text: t('common.cancel'), style: 'cancel' },
+      {
+        text: t('note.deleteConfirm'),
+        style: 'destructive',
+        onPress: () => {
+          void (async () => {
+            try {
+              await services.notes.deleteNote(noteId);
+              router.replace('/');
+            } catch (error) {
+              console.error('[Noto] delete note failed', error);
+              Alert.alert(t('note.deleteError'));
+            }
+          })();
+        },
+      },
+    ]);
+  }, [services, noteId]);
+
+  const openLink = useCallback(
+    (wikilink: Wikilink, noteLink: NoteLink | null) => {
+      if (noteLink?.resolution === 'resolved' && noteLink.targetNoteId) {
+        router.push({ pathname: '/note/[id]', params: { id: noteLink.targetNoteId } });
+        return;
+      }
+      if (noteLink?.resolution === 'ambiguous') {
+        router.push({
+          pathname: '/note/[id]/link-target',
+          params: { id: noteId, linkId: noteLink.id, target: wikilink.target },
+        });
+        return;
+      }
+      Alert.alert(
+        t('link.unresolvedTitle'),
+        `${t('link.unresolvedMessage')}\n\n"${wikilink.target}"`,
+        [
+          { text: t('common.cancel'), style: 'cancel' },
+          {
+            text: t('link.create'),
+            onPress: () => {
+              void (async () => {
+                try {
+                  const created = await services.notes.createNote({ title: wikilink.target });
+                  router.push({ pathname: '/note/[id]', params: { id: created.id } });
+                } catch (error) {
+                  console.error('[Noto] create note from link failed', error);
+                  Alert.alert(t('link.createError'));
+                }
+              })();
+            },
+          },
+        ],
+      );
+    },
+    [services, noteId],
+  );
+
+  const refreshAttachments = useCallback(async () => {
+    const attachments = await services.attachments.listForNote(noteId);
+    setState((current) => (current.status === 'ready' ? { ...current, attachments } : current));
+  }, [services, noteId]);
+
+  const ensureCameraPermission = useCallback(async (): Promise<boolean> => {
+    const current = await services.media.getPermission('camera');
+    if (current.state === 'unavailable') {
+      Alert.alert(t('attachments.permTitle'), t('attachments.permUnavailable'));
+      return false;
+    }
+    if (current.state === 'granted') return true;
+    const requested = await services.media.requestPermission('camera');
+    if (requested.state === 'granted') return true;
+    Alert.alert(t('attachments.permTitle'), t('attachments.permBlocked'), [
+      { text: t('common.cancel'), style: 'cancel' },
+      { text: t('attachments.openSettings'), onPress: () => void Linking.openSettings() },
+    ]);
+    return false;
+  }, [services]);
+
+  const addFromGallery = useCallback(async () => {
+    if (attaching) return;
+    setAttaching(true);
+    try {
+      // Best-effort on Android: the system photo picker grants per-item access, so a
+      // denied media-library permission must not block the picker (Implementation Decision).
+      const permission = await services.media.getPermission('library');
+      if (
+        permission.state !== 'granted' &&
+        (permission.state === 'undetermined' || permission.canAskAgain)
+      ) {
+        await services.media.requestPermission('library');
+      }
+      const picked = await services.media.pickFromLibrary();
+      if (!picked) return;
+      await services.attachments.addImage({ noteId, source: picked });
+      await refreshAttachments();
+    } catch (error) {
+      console.error('[Noto] add image from gallery failed', error);
+      Alert.alert(t('attachments.addError'));
+    } finally {
+      setAttaching(false);
+    }
+  }, [attaching, services, noteId, refreshAttachments]);
+
+  const addFromCamera = useCallback(async () => {
+    if (attaching) return;
+    setAttaching(true);
+    try {
+      if (!(await ensureCameraPermission())) return;
+      const picked = await services.media.captureWithCamera();
+      if (!picked) return;
+      await services.attachments.addImage({ noteId, source: picked });
+      await refreshAttachments();
+    } catch (error) {
+      console.error('[Noto] camera capture failed', error);
+      Alert.alert(t('attachments.addError'));
+    } finally {
+      setAttaching(false);
+    }
+  }, [attaching, ensureCameraPermission, services, noteId, refreshAttachments]);
+
+  const removeAttachment = useCallback(
+    (view: AttachmentView) => {
+      Alert.alert(t('attachments.deleteTitle'), t('attachments.deleteMessage'), [
+        { text: t('common.cancel'), style: 'cancel' },
+        {
+          text: t('attachments.delete'),
+          style: 'destructive',
+          onPress: () => {
+            void (async () => {
+              setAttaching(true);
+              try {
+                await services.attachments.remove(view.attachment.id);
+                await refreshAttachments();
+              } catch (error) {
+                console.error('[Noto] delete attachment failed', error);
+                Alert.alert(t('attachments.deleteError'));
+              } finally {
+                setAttaching(false);
+              }
+            })();
+          },
+        },
+      ]);
+    },
+    [services, refreshAttachments],
+  );
+
+  const headerTitle =
+    state.status === 'ready'
+      ? state.note.title.trim() || t('home.untitled')
+      : t('note.detailTitle');
+
+  return (
+    <>
+      <Stack.Screen options={{ headerShown: true, title: headerTitle }} />
+      <View style={[styles.flex, { backgroundColor: colors.background }]}>
+        {state.status === 'loading' ? (
+          <View style={styles.center}>
+            <ActivityIndicator color={colors.accent} />
+            <Text style={[styles.message, { color: colors.textMuted }]}>{t('note.loading')}</Text>
+          </View>
+        ) : state.status === 'notFound' ? (
+          <View style={styles.center}>
+            <Text style={[styles.message, { color: colors.textMuted }]}>{t('note.notFound')}</Text>
+          </View>
+        ) : state.status === 'error' ? (
+          <View style={styles.center}>
+            <Text style={[styles.message, { color: colors.textMuted }]}>{t('note.error')}</Text>
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => {
+                setState({ status: 'loading' });
+                void (async () => {
+                  try {
+                    const bundle = await fetchBundle();
+                    setState(bundle ? { status: 'ready', ...bundle } : { status: 'notFound' });
+                  } catch (error) {
+                    setState({ status: 'error', error: toError(error) });
+                  }
+                })();
+              }}
+              style={[styles.retry, { backgroundColor: colors.accent }]}
+            >
+              <Text style={styles.retryLabel}>{t('common.retry')}</Text>
+            </Pressable>
+          </View>
+        ) : (
+          <>
+            <ScrollView contentContainerStyle={styles.content}>
+              <Text style={[styles.noteTitle, { color: colors.text }]}>
+                {state.note.title.trim() || t('home.untitled')}
+              </Text>
+              {state.note.content.trim().length > 0 ? (
+                <NoteContent
+                  content={state.note.content}
+                  links={state.links}
+                  onPressLink={openLink}
+                  style={[styles.body, { color: colors.text }]}
+                />
+              ) : (
+                <Text style={[styles.message, { color: colors.textMuted }]}>
+                  {t('home.noContent')}
+                </Text>
+              )}
+              <View style={styles.timestamps}>
+                <Text style={[styles.timestamp, { color: colors.textMuted }]}>
+                  {t('note.created')}: {formatDateTime(state.note.createdAt)}
+                </Text>
+                <Text style={[styles.timestamp, { color: colors.textMuted }]}>
+                  {t('note.updated')}: {formatDateTime(state.note.updatedAt)}
+                </Text>
+              </View>
+
+              <View style={[styles.organization, { borderTopColor: colors.border }]}>
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={() =>
+                    router.push({
+                      pathname: '/note/[id]/notebook',
+                      params: { id: state.note.id },
+                    })
+                  }
+                  style={styles.orgRow}
+                >
+                  <Text style={[styles.orgLabel, { color: colors.textMuted }]}>
+                    {t('note.notebook')}
+                  </Text>
+                  <Text style={[styles.orgValue, { color: colors.accent }]}>
+                    {state.notebook ? state.notebook.name : t('note.noneNotebook')}
+                  </Text>
+                </Pressable>
+
+                <View style={styles.orgRow}>
+                  <Text style={[styles.orgLabel, { color: colors.textMuted }]}>
+                    {t('note.tags')}
+                  </Text>
+                  {state.tags.length === 0 ? (
+                    <Text style={[styles.orgValue, { color: colors.textMuted }]}>
+                      {t('tags.none')}
+                    </Text>
+                  ) : (
+                    <View style={styles.tagChips}>
+                      {state.tags.map((tag) => (
+                        <Text
+                          key={tag.id}
+                          style={[
+                            styles.tagChip,
+                            { backgroundColor: colors.accentMuted, color: colors.accent },
+                          ]}
+                        >
+                          #{tag.displayName}
+                        </Text>
+                      ))}
+                    </View>
+                  )}
+                </View>
+
+                <Pressable
+                  accessibilityRole="link"
+                  onPress={() =>
+                    router.push({ pathname: '/note/[id]/tags', params: { id: state.note.id } })
+                  }
+                >
+                  <Text style={[styles.manage, { color: colors.accent }]}>{t('tags.manage')}</Text>
+                </Pressable>
+              </View>
+
+              <AttachmentSection
+                views={state.attachments}
+                busy={attaching}
+                onAddGallery={() => void addFromGallery()}
+                onAddCamera={() => void addFromCamera()}
+                onRecord={() =>
+                  router.push({ pathname: '/note/[id]/record', params: { id: state.note.id } })
+                }
+                onDelete={removeAttachment}
+              />
+
+              <View style={[styles.backlinks, { borderTopColor: colors.border }]}>
+                <Text style={[styles.backlinksTitle, { color: colors.textMuted }]}>
+                  {t('link.backlinks')}
+                </Text>
+                {state.backlinks.length === 0 ? (
+                  <Text style={[styles.message, { color: colors.textMuted }]}>
+                    {t('link.backlinksEmpty')}
+                  </Text>
+                ) : (
+                  state.backlinks.map((source) => (
+                    <Pressable
+                      key={source.id}
+                      accessibilityRole="link"
+                      onPress={() =>
+                        router.push({ pathname: '/note/[id]', params: { id: source.id } })
+                      }
+                      style={[styles.backlinkRow, { borderColor: colors.border }]}
+                    >
+                      <Text style={[styles.backlinkTitle, { color: colors.text }]}>
+                        {source.title.trim() || t('home.untitled')}
+                      </Text>
+                      <Text style={[styles.backlinkMeta, { color: colors.textMuted }]}>
+                        {formatDateTime(source.updatedAt)}
+                      </Text>
+                    </Pressable>
+                  ))
+                )}
+              </View>
+            </ScrollView>
+
+            <View style={[styles.actions, { borderTopColor: colors.border }]}>
+              <Pressable
+                accessibilityRole="button"
+                onPress={() =>
+                  router.push({
+                    pathname: '/note/[id]/edit',
+                    params: { id: state.note.id },
+                  })
+                }
+                style={[styles.action, { backgroundColor: colors.accent }]}
+              >
+                <Text style={styles.actionLabel}>{t('note.edit')}</Text>
+              </Pressable>
+              <Pressable
+                accessibilityRole="button"
+                disabled={exporting}
+                onPress={exportCurrentNote}
+                style={[
+                  styles.action,
+                  { backgroundColor: colors.accentMuted, opacity: exporting ? 0.5 : 1 },
+                ]}
+              >
+                <Text style={[styles.actionLabel, { color: colors.accent }]}>
+                  {exporting ? t('editor.saving') : t('export.action')}
+                </Text>
+              </Pressable>
+              <Pressable
+                accessibilityRole="button"
+                onPress={remove}
+                style={[styles.action, { backgroundColor: colors.danger }]}
+              >
+                <Text style={styles.actionLabel}>{t('note.delete')}</Text>
+              </Pressable>
+            </View>
+          </>
+        )}
+      </View>
+    </>
+  );
+}
+
+const styles = StyleSheet.create({
+  flex: { flex: 1 },
+  content: { padding: spacing.lg, gap: spacing.md, paddingBottom: spacing.xl },
+  noteTitle: { fontSize: 22, lineHeight: 28, fontWeight: '600' },
+  body: { fontSize: 16, lineHeight: 24 },
+  timestamps: { gap: 2, marginTop: spacing.md },
+  timestamp: { fontSize: 12 },
+  organization: {
+    marginTop: spacing.lg,
+    paddingTop: spacing.md,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    gap: spacing.md,
+  },
+  orgRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
+  orgLabel: { fontSize: 13, fontWeight: '600', width: 84 },
+  orgValue: { fontSize: 14, fontWeight: '600' },
+  tagChips: { flex: 1, flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
+  tagChip: {
+    fontSize: 13,
+    fontWeight: '600',
+    borderRadius: radius.sm,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 4,
+    overflow: 'hidden',
+  },
+  manage: { fontSize: 14, fontWeight: '600' },
+  backlinks: {
+    marginTop: spacing.lg,
+    paddingTop: spacing.md,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    gap: spacing.sm,
+  },
+  backlinksTitle: { fontSize: 13, fontWeight: '600' },
+  backlinkRow: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: radius.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    gap: 2,
+  },
+  backlinkTitle: { fontSize: 15, fontWeight: '600' },
+  backlinkMeta: { fontSize: 12 },
+  center: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.md,
+    padding: spacing.xl,
+  },
+  message: { fontSize: 15, textAlign: 'center' },
+  retry: {
+    minHeight: 48,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: spacing.xl,
+  },
+  retryLabel: { color: '#FFFFFF', fontSize: 16, fontWeight: '600' },
+  actions: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    padding: spacing.lg,
+    borderTopWidth: StyleSheet.hairlineWidth,
+  },
+  action: {
+    flex: 1,
+    minHeight: 48,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  actionLabel: { color: '#FFFFFF', fontSize: 16, fontWeight: '600' },
+});

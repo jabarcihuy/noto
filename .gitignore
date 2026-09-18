@@ -1,0 +1,32 @@
+node_modules/
+dist/
+web-build/
+.expo/
+expo-env.d.ts
+
+# generated native projects (expo prebuild)
+/android
+/ios
+
+# agent skills installed via `npx skills add` (third-party tooling, not app source)
+/.agents
+/agent
+/.claude
+/skills-lock.json
+
+# local env files
+.env*.local
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# typescript
+*.tsbuildinfo
+
+# OS
+.DS_Store
+
+# macOS
+*.pem
