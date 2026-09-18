@@ -152,6 +152,41 @@ Follow `docs/ARCHITECTURE.md` §8–§9.
   is insufficient, and its maintenance/security weight.
 - Keep dependencies minimal in the domain layer: ideally none.
 
+## 9.1 Build & Release Tooling (EAS)
+
+The project owner has authorised the use of the **EAS CLI** for producing Android builds.
+Scope and hard limits:
+
+**Allowed**
+
+- `eas whoami` — verify the existing session. Never ask the owner for credentials or tokens.
+- `eas init` — link the project to the owner's Expo account when not yet linked.
+- `eas build --platform android --profile <development|preview>` — produce installable APKs.
+- `eas build:list` / `eas build:view` / `eas build:cancel` — inspect or cancel builds.
+- `eas build:configure` — create/refresh `eas.json`.
+
+**Never**
+
+- `eas account:login` / `eas account:logout`, or any credential/token handling.
+- `eas submit`, `eas update`, `eas channel:*`, `eas env:*`, or anything that publishes,
+  submits, or alters Expo account/billing/credentials settings.
+- Changing a profile to production, or running a release/store build.
+- Adding a dependency or changing the stack to make a build pass.
+
+**Conventions**
+
+- `development` profile → dev-client APK, needs Metro (`npx expo start --dev-client`).
+- `preview` profile → standalone release APK with the JS bundle; this is the artifact for
+  manual QA and the one to hand to the owner.
+- Keep `appVersionSource: local` and the existing keystore; never regenerate credentials.
+- Local validation (`npm test`, `tsc --noEmit`, `expo lint`, `prettier --check`,
+  `npx expo-doctor`) must pass before a build is started.
+- EAS requires a git repository; commit before building so the build records a commit.
+- Report the build ID, the artifact URL, and its SHA-256 so the owner can detect a
+  corrupted download (a truncated APK fails with `INSTALL_PARSE_FAILED_NO_CERTIFICATES`).
+- A finished EAS build is **build-verified only**. Never report it as Android runtime
+  verification.
+
 ## 10. Testing Requirements
 
 - Domain logic (wikilink parsing, tag grammar/normalization, link resolution,
