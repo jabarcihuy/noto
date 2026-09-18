@@ -213,7 +213,12 @@ const id = {
 
   'settings.title': 'Pengaturan',
   'settings.phase0': 'Diagnostik Phase 0',
-  'settings.about': 'Tentang Noto',
+  'settings.about':
+    'Noto adalah catatan pribadi yang bekerja sepenuhnya offline. Tidak ada akun, tidak ada server, dan tidak ada data yang dikirim keluar dari perangkat.',
+  'settings.aboutShort': 'Noto · catatan offline tanpa akun',
+  'settings.aboutMore': 'Tentang Noto',
+  'settings.maintenance': 'Perawatan',
+  'settings.general': 'Umum',
   'settings.language': 'Bahasa: Indonesia',
   'settings.templates': 'Template',
 
@@ -298,8 +303,9 @@ const id = {
   'vault.notes': 'Catatan',
   'vault.attachments': 'Lampiran',
   'vault.error': 'Operasi gagal. Data lama tidak diubah.',
-  'vault.zipNote':
-    'Ekspor ZIP belum tersedia (tanpa API arsip bawaan); ekspor memakai folder vault.',
+  'vault.exportDetail': 'Simpan semua catatan dan lampiran ke folder',
+  'reconcile.detail': 'Cari lampiran hilang atau yatim',
+  'diagnostics.detail': 'Cek integritas database dan FTS5',
 
   'phase0.title': 'Diagnostik Phase 0',
   'phase0.run': 'Jalankan lagi',

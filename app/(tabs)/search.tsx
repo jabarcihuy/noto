@@ -98,6 +98,7 @@ export default function SearchScreen() {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   useEffect(() => {
     const handle = setTimeout(() => setDebouncedQuery(query), 300);
@@ -296,102 +297,129 @@ export default function SearchScreen() {
       {notice ? <InfoCard>{notice}</InfoCard> : null}
 
       <View style={styles.rowBetween}>
-        <ThemedText style={[styles.section, { color: colors.textMuted }]}>
-          {t('search.filters')}
-          {activeFilterCount > 0 ? ` · ${activeFilterCount} ${t('search.filtersActive')}` : ''}
-        </ThemedText>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityState={{ expanded: filtersOpen }}
+          onPress={() => setFiltersOpen((value) => !value)}
+          style={[styles.filterToggle, { borderColor: colors.border }]}
+        >
+          <ThemedText variant="label" color={filtersOpen ? colors.accent : colors.text}>
+            {activeFilterCount > 0
+              ? `${t('search.filters')} · ${activeFilterCount}`
+              : t('search.filters')}
+          </ThemedText>
+        </Pressable>
         {activeFilterCount > 0 ? (
           <Pressable accessibilityRole="button" onPress={clearFilters}>
-            <ThemedText style={[styles.link, { color: colors.accent }]}>
+            <ThemedText variant="label" color={colors.accent}>
               {t('search.clearFilters')}
             </ThemedText>
           </Pressable>
         ) : null}
       </View>
 
-      {availableTags.length > 0 ? (
-        <View style={styles.filterBlock}>
-          <ThemedText style={[styles.filterLabel, { color: colors.textMuted }]}>
-            {t('search.tags')}
-          </ThemedText>
-          <View style={styles.chips}>
-            {availableTags.map((tag) =>
-              chip(
-                tag.displayName,
-                selectedTags.includes(tag.name),
-                () => toggleTag(tag.name),
-                tag.id,
-              ),
-            )}
+      {filtersOpen ? (
+        <View style={styles.filterPanel}>
+          {availableTags.length > 0 ? (
+            <View style={styles.filterBlock}>
+              <ThemedText style={[styles.filterLabel, { color: colors.textMuted }]}>
+                {t('search.tags')}
+              </ThemedText>
+              <View style={styles.chips}>
+                {availableTags.map((tag) =>
+                  chip(
+                    tag.displayName,
+                    selectedTags.includes(tag.name),
+                    () => toggleTag(tag.name),
+                    tag.id,
+                  ),
+                )}
+              </View>
+            </View>
+          ) : null}
+
+          {notebooks.length > 0 ? (
+            <View style={styles.filterBlock}>
+              <ThemedText style={[styles.filterLabel, { color: colors.textMuted }]}>
+                {t('search.notebook')}
+              </ThemedText>
+              <View style={styles.chips}>
+                {chip(t('search.all'), notebookId === null, () => setNotebookId(null), 'nb-all')}
+                {notebooks.map((notebook) =>
+                  chip(
+                    notebook.name,
+                    notebookId === notebook.id,
+                    () => setNotebookId(notebook.id),
+                    notebook.id,
+                  ),
+                )}
+              </View>
+            </View>
+          ) : null}
+
+          {captureTypes.length > 0 ? (
+            <View style={styles.filterBlock}>
+              <ThemedText style={[styles.filterLabel, { color: colors.textMuted }]}>
+                {t('search.captureType')}
+              </ThemedText>
+              <View style={styles.chips}>
+                {chip(
+                  t('search.all'),
+                  captureType === null,
+                  () => setCaptureType(null),
+                  'type-all',
+                )}
+                {captureTypes.map((type) =>
+                  chip(
+                    captureTypeLabel(type),
+                    captureType === type,
+                    () => setCaptureType(type),
+                    type,
+                  ),
+                )}
+              </View>
+            </View>
+          ) : null}
+
+          <View style={styles.filterBlock}>
+            <ThemedText style={[styles.filterLabel, { color: colors.textMuted }]}>
+              {t('search.date')}
+            </ThemedText>
+            <View style={styles.chips}>
+              {DATE_OPTIONS.map((option) =>
+                chip(
+                  option.label(),
+                  dateSelection === option.value,
+                  () => {
+                    setDateSelection(option.value);
+                    setCustomRange(null);
+                  },
+                  option.value,
+                ),
+              )}
+              {dateSelection === 'custom'
+                ? chip(t('search.dateSaved'), true, () => undefined, 'custom')
+                : null}
+            </View>
+          </View>
+
+          <View style={styles.filterBlock}>
+            <ThemedText style={[styles.filterLabel, { color: colors.textMuted }]}>
+              {t('search.sort')}
+            </ThemedText>
+            <View style={styles.chips}>
+              {SORT_OPTIONS.map((option) =>
+                chip(
+                  option.label(),
+                  sort === option.value,
+                  () => setSort(option.value),
+                  option.value,
+                ),
+              )}
+            </View>
           </View>
         </View>
       ) : null}
-
-      {notebooks.length > 0 ? (
-        <View style={styles.filterBlock}>
-          <ThemedText style={[styles.filterLabel, { color: colors.textMuted }]}>
-            {t('search.notebook')}
-          </ThemedText>
-          <View style={styles.chips}>
-            {chip(t('search.all'), notebookId === null, () => setNotebookId(null), 'nb-all')}
-            {notebooks.map((notebook) =>
-              chip(
-                notebook.name,
-                notebookId === notebook.id,
-                () => setNotebookId(notebook.id),
-                notebook.id,
-              ),
-            )}
-          </View>
-        </View>
-      ) : null}
-
-      {captureTypes.length > 0 ? (
-        <View style={styles.filterBlock}>
-          <ThemedText style={[styles.filterLabel, { color: colors.textMuted }]}>
-            {t('search.captureType')}
-          </ThemedText>
-          <View style={styles.chips}>
-            {chip(t('search.all'), captureType === null, () => setCaptureType(null), 'type-all')}
-            {captureTypes.map((type) =>
-              chip(captureTypeLabel(type), captureType === type, () => setCaptureType(type), type),
-            )}
-          </View>
-        </View>
-      ) : null}
-
-      <View style={styles.filterBlock}>
-        <ThemedText style={[styles.filterLabel, { color: colors.textMuted }]}>
-          {t('search.date')}
-        </ThemedText>
-        <View style={styles.chips}>
-          {DATE_OPTIONS.map((option) =>
-            chip(
-              option.label(),
-              dateSelection === option.value,
-              () => {
-                setDateSelection(option.value);
-                setCustomRange(null);
-              },
-              option.value,
-            ),
-          )}
-          {dateSelection === 'custom'
-            ? chip(t('search.dateSaved'), true, () => undefined, 'custom')
-            : null}
-        </View>
-      </View>
-
-      <View style={styles.filterBlock}>
-        <ThemedText style={[styles.filterLabel, { color: colors.textMuted }]}>
-          {t('search.sort')}
-        </ThemedText>
-        <View style={styles.chips}>
-          {SORT_OPTIONS.map((option) =>
-            chip(option.label(), sort === option.value, () => setSort(option.value), option.value),
-          )}
-        </View>
-      </View>
 
       <View style={styles.rowBetween}>
         <ThemedText style={[styles.section, { color: colors.textMuted }]}>
@@ -529,6 +557,13 @@ const styles = StyleSheet.create({
   rowBetween: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   section: { ...type.label },
   filterBlock: { gap: spacing.xs },
+  filterPanel: { gap: spacing.lg, paddingTop: spacing.xs },
+  filterToggle: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: radius.full,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+  },
   filterLabel: { ...type.caption },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   chip: {

@@ -1,15 +1,16 @@
 import { router } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Pressable, StyleSheet, useColorScheme } from 'react-native';
+import { StyleSheet, View, useColorScheme } from 'react-native';
 
 import type { VaultStage } from '@/features/vault';
-import { PrimaryButton } from '@/ui/components/primary-button';
 import { InfoCard } from '@/ui/components/info-card';
+import { ListRow, ListSection } from '@/ui/components/list-section';
+import { PrimaryButton } from '@/ui/components/primary-button';
 import { Screen } from '@/ui/components/screen';
+import { ThemedText } from '@/ui/components/themed-text';
 import { t } from '@/ui/i18n';
 import { useAppServices } from '@/ui/providers/app-provider';
-import { getTheme, spacing, type } from '@/ui/theme';
-import { ThemedText } from '@/ui/components/themed-text';
+import { getTheme, spacing } from '@/ui/theme';
 
 type Busy = 'none' | 'reconcile' | 'export' | 'importFile' | 'importFolder' | 'diagnostics';
 
@@ -43,11 +44,8 @@ export default function SettingsScreen() {
     try {
       const report = await services.attachments.reconcile();
       setSummary(
-        `${t('reconcile.done')}\n` +
-          `${t('reconcile.matched')}: ${report.matched} · ` +
-          `${t('reconcile.missing')}: ${report.missing.length} · ` +
-          `${t('reconcile.orphan')}: ${report.orphan.length} · ` +
-          `${t('reconcile.pending')}: ${report.pendingRemaining}`,
+        `${t('reconcile.done')} · ${t('reconcile.missing')}: ${report.missing.length} · ` +
+          `${t('reconcile.orphan')}: ${report.orphan.length}`,
       );
     } catch (error) {
       console.error('[Noto] attachment reconciliation failed', error);
@@ -63,16 +61,10 @@ export default function SettingsScreen() {
     setStage('preparing');
     try {
       const result = await services.vault.exportVault({ onStage: setStage });
-      const lines = [
-        t('vault.exportDone'),
-        `${t('vault.notes')}: ${result.noteCount} · ${t('vault.attachments')}: ${result.attachmentCount}`,
-      ];
+      const lines = [`${t('vault.exportDone')} · ${result.noteCount} ${t('vault.notes')}`];
       if (result.usedFallback) lines.push(t('vault.exportFallback'));
       if (result.missingAttachments.length > 0) {
         lines.push(`${t('vault.exportMissing')}: ${result.missingAttachments.length}`);
-      }
-      if (result.warnings.length > 0) {
-        lines.push(`${t('vault.exportWarnings')}: ${result.warnings.length}`);
       }
       setSummary(lines.join('\n'));
     } catch (error) {
@@ -100,17 +92,10 @@ export default function SettingsScreen() {
         }
         const lines = [
           result.status === 'partial' ? t('vault.importPartial') : t('vault.importDone'),
-          `${t('vault.importedNotes')}: ${result.importedNotes} · ` +
-            `${t('vault.importedAttachments')}: ${result.importedAttachments} · ` +
-            `${t('vault.importedNotebooks')}: ${result.createdNotebooks}`,
-          `${t('vault.importedTemplates')}: ${result.importedTemplates} · ` +
-            `${t('vault.importedSavedSearches')}: ${result.importedSavedSearches}`,
+          `${result.importedNotes} ${t('vault.notes')} · ${result.importedAttachments} ${t('vault.attachments')}`,
         ];
         if (result.conflicts.length > 0) {
           lines.push(`${t('vault.conflicts')}: ${result.conflicts.length}`);
-        }
-        if (result.warnings.length > 0) {
-          lines.push(`${t('vault.warnings')}: ${result.warnings.length}`);
         }
         if (result.skippedFiles.length > 0) {
           lines.push(`${t('vault.skipped')}: ${result.skippedFiles.length}`);
@@ -134,9 +119,8 @@ export default function SettingsScreen() {
       const report = await services.diagnostics.run();
       setSummary(
         `${t('diagnostics.done')}\n` +
-          `SQLite: ${report.integrity} · FK: ${report.foreignKeyViolations}\n` +
-          `${t('diagnostics.schema')}: ${report.schemaVersion} · FTS5: ${report.fts5 ? 'ya' : 'tidak'}\n` +
-          `${t('vault.notes')}: ${report.noteCount} · ${t('vault.attachments')}: ${report.attachmentCount}`,
+          `SQLite: ${report.integrity} · FTS5: ${report.fts5 ? 'ya' : 'tidak'} · ` +
+          `${report.noteCount} ${t('vault.notes')}`,
       );
     } catch (error) {
       console.error('[Noto] diagnostics failed', error);
@@ -150,75 +134,76 @@ export default function SettingsScreen() {
 
   return (
     <Screen title={t('settings.title')} scroll>
-      <InfoCard>{t('settings.about')}</InfoCard>
-      <InfoCard>{t('settings.language')}</InfoCard>
-      <InfoCard>{t('vault.zipNote')}</InfoCard>
+      {summary ? <InfoCard>{summary}</InfoCard> : null}
 
-      <ThemedText style={[styles.section, { color: colors.textMuted }]}>
-        {t('vault.section')}
-      </ThemedText>
-      <PrimaryButton
-        label={t('vault.export')}
-        loading={busy === 'export'}
-        disabled={anyBusy}
-        onPress={() => void exportVault()}
-      />
-      <PrimaryButton
-        label={t('vault.importFile')}
-        variant="secondary"
-        loading={busy === 'importFile'}
-        disabled={anyBusy}
-        onPress={() => void runImport('file')}
-      />
-      <PrimaryButton
-        label={t('vault.importFolder')}
-        variant="secondary"
-        loading={busy === 'importFolder'}
-        disabled={anyBusy}
-        onPress={() => void runImport('folder')}
-      />
       {stage && busy !== 'reconcile' ? (
         <ThemedText
           accessibilityRole="text"
           accessibilityLiveRegion="polite"
-          style={[styles.stage, { color: colors.accent }]}
+          variant="label"
+          color={colors.accent}
         >
           {stageLabel(stage)}
         </ThemedText>
       ) : null}
 
-      <PrimaryButton
-        label={busy === 'reconcile' ? t('reconcile.running') : t('reconcile.action')}
-        variant="secondary"
-        loading={busy === 'reconcile'}
-        disabled={anyBusy}
-        onPress={() => void reconcile()}
-      />
-      <PrimaryButton
-        label={t('diagnostics.action')}
-        variant="secondary"
-        loading={busy === 'diagnostics'}
-        disabled={anyBusy}
-        onPress={() => void runDiagnostics()}
-      />
-      {summary ? <InfoCard>{summary}</InfoCard> : null}
+      <ListSection title={t('vault.section')}>
+        <ListRow
+          label={t('vault.export')}
+          detail={t('vault.exportDetail')}
+          onPress={() => void exportVault()}
+          disabled={anyBusy}
+        />
+        <ListRow
+          label={t('vault.importFile')}
+          onPress={() => void runImport('file')}
+          disabled={anyBusy}
+        />
+        <ListRow
+          label={t('vault.importFolder')}
+          onPress={() => void runImport('folder')}
+          disabled={anyBusy}
+          last
+        />
+      </ListSection>
 
-      <Pressable accessibilityRole="link" onPress={() => router.push('/templates')}>
-        <ThemedText style={[styles.link, { color: colors.accent }]}>
-          {t('settings.templates')}
+      <ListSection title={t('settings.maintenance')}>
+        <ListRow
+          label={t('reconcile.action')}
+          detail={t('reconcile.detail')}
+          onPress={() => void reconcile()}
+          disabled={anyBusy}
+        />
+        <ListRow
+          label={t('diagnostics.action')}
+          detail={t('diagnostics.detail')}
+          onPress={() => void runDiagnostics()}
+          disabled={anyBusy}
+          last
+        />
+      </ListSection>
+
+      <ListSection title={t('settings.general')}>
+        <ListRow label={t('settings.templates')} onPress={() => router.push('/templates')} />
+        <ListRow label={t('settings.language')} />
+        <ListRow label={t('settings.phase0')} onPress={() => router.push('/phase0')} last />
+      </ListSection>
+
+      <View style={styles.about}>
+        <ThemedText variant="caption" color={colors.textFaint} style={styles.aboutText}>
+          {t('settings.aboutShort')}
         </ThemedText>
-      </Pressable>
-      <Pressable accessibilityRole="link" onPress={() => router.push('/phase0')}>
-        <ThemedText style={[styles.link, { color: colors.accent }]}>
-          {t('settings.phase0')}
-        </ThemedText>
-      </Pressable>
+        <PrimaryButton
+          label={t('settings.aboutMore')}
+          variant="ghost"
+          onPress={() => setSummary(t('settings.about'))}
+        />
+      </View>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  section: { ...type.label, marginTop: spacing.md },
-  stage: { ...type.subhead },
-  link: { ...type.subhead, marginTop: spacing.sm },
+  about: { alignItems: 'center', gap: spacing.xs, marginTop: spacing.md },
+  aboutText: { textAlign: 'center' },
 });

@@ -24,50 +24,53 @@ export type ThemeColors = {
 };
 
 /**
- * Palette: a calm ink/indigo scheme on a slightly warm neutral. Indigo reads as
- * "notebook/study" rather than corporate blue, holds up in dark mode, and keeps the
- * accent distinguishable from the danger/warning hues.
+ * Palette from https://colorhunt.co/palette/0000001f150c412d15e1dcc9
+ *   #000000 near-black · #1F150C espresso · #412D15 dark leather · #E1DCC9 parchment
+ *
+ * A warm, paper-and-leather scheme: parchment surfaces in light mode, espresso in dark
+ * mode, with the dark leather brown as the single accent. Light mode keeps the parchment
+ * as the page and uses the darker tones for text; dark mode inverts that.
  */
 const light: ThemeColors = {
-  background: '#FBFAF9',
-  surface: '#F3F2F0',
-  surfaceRaised: '#FFFFFF',
-  surfaceSunken: '#EDEBE8',
-  border: '#E4E1DC',
-  borderStrong: '#CFCBC4',
-  text: '#1A1A1D',
-  textMuted: '#63605C',
-  textFaint: '#918D87',
-  accent: '#4F46E5',
-  accentPressed: '#4338CA',
-  accentMuted: '#EEF0FF',
-  accentText: '#FFFFFF',
-  danger: '#C2412D',
-  dangerMuted: '#FBEDEA',
-  success: '#15803D',
-  warning: '#B45309',
-  overlay: 'rgba(20, 18, 16, 0.45)',
+  background: '#F7F4EC',
+  surface: '#EFEADF',
+  surfaceRaised: '#FDFBF6',
+  surfaceSunken: '#E1DCC9',
+  border: '#DED7C4',
+  borderStrong: '#C4B9A0',
+  text: '#1F150C',
+  textMuted: '#6B5B45',
+  textFaint: '#94856C',
+  accent: '#412D15',
+  accentPressed: '#2E1F0E',
+  accentMuted: '#E8E1D0',
+  accentText: '#FDFBF6',
+  danger: '#A3341F',
+  dangerMuted: '#F3E2DC',
+  success: '#4A6B2A',
+  warning: '#8A5A12',
+  overlay: 'rgba(31, 21, 12, 0.45)',
 };
 
 const dark: ThemeColors = {
-  background: '#121114',
-  surface: '#1C1B1F',
-  surfaceRaised: '#26242A',
-  surfaceSunken: '#0D0C0F',
-  border: '#302E35',
-  borderStrong: '#443F4B',
-  text: '#F4F2F7',
-  textMuted: '#A9A4B2',
-  textFaint: '#7C7788',
-  accent: '#A5B4FC',
-  accentPressed: '#C7D2FE',
-  accentMuted: '#26264A',
-  accentText: '#1E1B4B',
-  danger: '#F0907F',
-  dangerMuted: '#3A2320',
-  success: '#6EE7A0',
-  warning: '#E5B567',
-  overlay: 'rgba(0, 0, 0, 0.6)',
+  background: '#0B0906',
+  surface: '#1F150C',
+  surfaceRaised: '#2A1D11',
+  surfaceSunken: '#000000',
+  border: '#3A2A18',
+  borderStrong: '#57422A',
+  text: '#E1DCC9',
+  textMuted: '#A99C82',
+  textFaint: '#7A6E58',
+  accent: '#E1DCC9',
+  accentPressed: '#F2EEE1',
+  accentMuted: '#332516',
+  accentText: '#1F150C',
+  danger: '#E28A73',
+  dangerMuted: '#3A2118',
+  success: '#9BC46B',
+  warning: '#D9A94E',
+  overlay: 'rgba(0, 0, 0, 0.65)',
 };
 
 export const spacing = {
@@ -91,9 +94,9 @@ export const radius = {
 /** Elevation as CSS `boxShadow` strings (never legacy shadow/elevation props). */
 export const shadows = {
   none: 'none',
-  card: '0 1px 2px rgba(24, 20, 16, 0.06)',
-  raised: '0 4px 14px rgba(24, 20, 16, 0.10)',
-  overlay: '0 12px 32px rgba(24, 20, 16, 0.18)',
+  card: '0 1px 2px rgba(31, 21, 12, 0.06)',
+  raised: '0 4px 14px rgba(31, 21, 12, 0.10)',
+  overlay: '0 12px 32px rgba(31, 21, 12, 0.20)',
 } as const;
 
 /**

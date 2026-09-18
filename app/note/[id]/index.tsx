@@ -19,6 +19,7 @@ import type { Tag } from '@/features/tags/domain/tag';
 import { countAttachmentReferences } from '@/features/vault/domain/note-markdown';
 import { AttachmentSection } from '@/ui/components/attachment-section';
 import { NoteContent } from '@/ui/components/note-content';
+import { PrimaryButton } from '@/ui/components/primary-button';
 import { toError } from '@/ui/errors';
 import { formatDateTime } from '@/ui/format/date';
 import { t } from '@/ui/i18n';
@@ -328,70 +329,34 @@ export default function NoteDetailScreen() {
                   {t('home.noContent')}
                 </ThemedText>
               )}
-              <View style={styles.timestamps}>
-                <ThemedText style={[styles.timestamp, { color: colors.textMuted }]}>
-                  {t('note.created')}: {formatDateTime(state.note.createdAt)}
+              <View style={styles.metaRow}>
+                <ThemedText variant="caption" color={colors.textFaint}>
+                  {formatDateTime(state.note.updatedAt)}
                 </ThemedText>
-                <ThemedText style={[styles.timestamp, { color: colors.textMuted }]}>
-                  {t('note.updated')}: {formatDateTime(state.note.updatedAt)}
-                </ThemedText>
-              </View>
-
-              <View style={[styles.organization, { borderTopColor: colors.border }]}>
-                <Pressable
-                  accessibilityRole="button"
-                  onPress={() =>
-                    router.push({
-                      pathname: '/note/[id]/notebook',
-                      params: { id: state.note.id },
-                    })
-                  }
-                  style={styles.orgRow}
-                >
-                  <ThemedText style={[styles.orgLabel, { color: colors.textMuted }]}>
-                    {t('note.notebook')}
-                  </ThemedText>
-                  <ThemedText style={[styles.orgValue, { color: colors.accent }]}>
-                    {state.notebook ? state.notebook.name : t('note.noneNotebook')}
-                  </ThemedText>
-                </Pressable>
-
-                <View style={styles.orgRow}>
-                  <ThemedText style={[styles.orgLabel, { color: colors.textMuted }]}>
-                    {t('note.tags')}
-                  </ThemedText>
-                  {state.tags.length === 0 ? (
-                    <ThemedText style={[styles.orgValue, { color: colors.textMuted }]}>
-                      {t('tags.none')}
+                {state.notebook ? (
+                  <>
+                    <View style={[styles.metaDot, { backgroundColor: colors.textFaint }]} />
+                    <ThemedText variant="caption" color={colors.textFaint}>
+                      {state.notebook.name}
                     </ThemedText>
-                  ) : (
-                    <View style={styles.tagChips}>
-                      {state.tags.map((tag) => (
-                        <ThemedText
-                          key={tag.id}
-                          style={[
-                            styles.tagChip,
-                            { backgroundColor: colors.accentMuted, color: colors.accent },
-                          ]}
-                        >
-                          #{tag.displayName}
-                        </ThemedText>
-                      ))}
-                    </View>
-                  )}
-                </View>
-
-                <Pressable
-                  accessibilityRole="link"
-                  onPress={() =>
-                    router.push({ pathname: '/note/[id]/tags', params: { id: state.note.id } })
-                  }
-                >
-                  <ThemedText style={[styles.manage, { color: colors.accent }]}>
-                    {t('tags.manage')}
-                  </ThemedText>
-                </Pressable>
+                  </>
+                ) : null}
               </View>
+
+              {state.tags.length > 0 ? (
+                <View style={styles.tagChips}>
+                  {state.tags.map((tag) => (
+                    <ThemedText
+                      key={tag.id}
+                      variant="caption"
+                      color={colors.accent}
+                      style={[styles.tagChip, { backgroundColor: colors.accentMuted }]}
+                    >
+                      #{tag.displayName}
+                    </ThemedText>
+                  ))}
+                </View>
+              ) : null}
 
               <AttachmentSection
                 views={state.attachments}
@@ -435,37 +400,36 @@ export default function NoteDetailScreen() {
             </ScrollView>
 
             <View style={[styles.actions, { borderTopColor: colors.border }]}>
-              <Pressable
-                accessibilityRole="button"
+              <PrimaryButton
+                label={t('note.edit')}
                 onPress={() =>
-                  router.push({
-                    pathname: '/note/[id]/edit',
-                    params: { id: state.note.id },
-                  })
+                  router.push({ pathname: '/note/[id]/edit', params: { id: state.note.id } })
                 }
-                style={[styles.action, { backgroundColor: colors.accent }]}
-              >
-                <ThemedText style={styles.actionLabel}>{t('note.edit')}</ThemedText>
-              </Pressable>
+                style={styles.primaryAction}
+              />
               <Pressable
                 accessibilityRole="button"
+                accessibilityLabel={exporting ? t('editor.saving') : t('export.action')}
                 disabled={exporting}
                 onPress={exportCurrentNote}
                 style={[
-                  styles.action,
-                  { backgroundColor: colors.accentMuted, opacity: exporting ? 0.5 : 1 },
+                  styles.iconAction,
+                  { backgroundColor: colors.surface, opacity: exporting ? 0.5 : 1 },
                 ]}
               >
-                <ThemedText style={[styles.actionLabel, { color: colors.accent }]}>
+                <ThemedText variant="label" color={colors.text}>
                   {exporting ? t('editor.saving') : t('export.action')}
                 </ThemedText>
               </Pressable>
               <Pressable
                 accessibilityRole="button"
+                accessibilityLabel={t('note.delete')}
                 onPress={remove}
-                style={[styles.action, { backgroundColor: colors.danger }]}
+                style={[styles.iconAction, { backgroundColor: colors.dangerMuted }]}
               >
-                <ThemedText style={styles.actionLabel}>{t('note.delete')}</ThemedText>
+                <ThemedText variant="label" color={colors.danger}>
+                  {t('note.delete')}
+                </ThemedText>
               </Pressable>
             </View>
           </>
@@ -480,18 +444,9 @@ const styles = StyleSheet.create({
   content: { padding: spacing.lg, gap: spacing.md, paddingBottom: spacing.xl },
   noteTitle: { ...type.title },
   body: { ...type.body },
-  timestamps: { gap: 2, marginTop: spacing.md },
-  timestamp: { ...type.caption },
-  organization: {
-    marginTop: spacing.lg,
-    paddingTop: spacing.md,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    gap: spacing.md,
-  },
-  orgRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
-  orgLabel: { ...type.label, width: 84 },
-  orgValue: { ...type.subhead },
-  tagChips: { flex: 1, flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
+  tagChips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
+  metaRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  metaDot: { width: 3, height: 3, borderRadius: radius.full },
   tagChip: {
     ...type.label,
     borderRadius: radius.sm,
@@ -499,7 +454,6 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     overflow: 'hidden',
   },
-  manage: { ...type.subhead },
   backlinks: {
     marginTop: spacing.lg,
     paddingTop: spacing.md,
@@ -534,16 +488,18 @@ const styles = StyleSheet.create({
   retryLabel: { color: '#FFFFFF', ...type.body },
   actions: {
     flexDirection: 'row',
-    gap: spacing.md,
-    padding: spacing.lg,
+    gap: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
     borderTopWidth: StyleSheet.hairlineWidth,
   },
-  action: {
-    flex: 1,
-    minHeight: 48,
-    borderRadius: 10,
+  primaryAction: { flex: 1 },
+  iconAction: {
+    minHeight: 50,
+    borderRadius: radius.md,
+    borderCurve: 'continuous',
     alignItems: 'center',
     justifyContent: 'center',
+    paddingHorizontal: spacing.lg,
   },
-  actionLabel: { color: '#FFFFFF', ...type.body },
 });
