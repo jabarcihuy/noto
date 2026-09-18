@@ -6,7 +6,6 @@ import {
   FlatList,
   Pressable,
   StyleSheet,
-  Text,
   TextInput,
   useColorScheme,
   View,
@@ -19,6 +18,7 @@ import { contentPreview, formatDateTime } from '@/ui/format/date';
 import { t } from '@/ui/i18n';
 import { useAppServices } from '@/ui/providers/app-provider';
 import { getTheme, radius, spacing } from '@/ui/theme/tokens';
+import { ThemedText } from '@/ui/components/themed-text';
 
 type DetailState =
   | { status: 'loading' }
@@ -118,21 +118,21 @@ export default function NotebookDetailScreen() {
         {state.status === 'loading' ? (
           <View style={styles.center}>
             <ActivityIndicator color={colors.accent} />
-            <Text style={[styles.message, { color: colors.textMuted }]}>
+            <ThemedText style={[styles.message, { color: colors.textMuted }]}>
               {t('notebookDetail.loading')}
-            </Text>
+            </ThemedText>
           </View>
         ) : state.status === 'notFound' ? (
           <View style={styles.center}>
-            <Text style={[styles.message, { color: colors.textMuted }]}>
+            <ThemedText style={[styles.message, { color: colors.textMuted }]}>
               {t('notebookDetail.notFound')}
-            </Text>
+            </ThemedText>
           </View>
         ) : state.status === 'error' ? (
           <View style={styles.center}>
-            <Text style={[styles.message, { color: colors.textMuted }]}>
+            <ThemedText style={[styles.message, { color: colors.textMuted }]}>
               {t('notebooks.error')}
-            </Text>
+            </ThemedText>
           </View>
         ) : (
           <>
@@ -174,18 +174,18 @@ export default function NotebookDetailScreen() {
                     onPress={startRename}
                     style={[styles.action, { backgroundColor: colors.accentMuted }]}
                   >
-                    <Text style={[styles.actionLabel, { color: colors.accent }]}>
+                    <ThemedText style={[styles.actionLabel, { color: colors.accent }]}>
                       {t('notebookDetail.rename')}
-                    </Text>
+                    </ThemedText>
                   </Pressable>
                   <Pressable
                     accessibilityRole="button"
                     onPress={confirmDelete}
                     style={[styles.action, { backgroundColor: colors.danger }]}
                   >
-                    <Text style={[styles.actionLabel, { color: '#FFFFFF' }]}>
+                    <ThemedText style={[styles.actionLabel, { color: '#FFFFFF' }]}>
                       {t('notebookDetail.delete')}
-                    </Text>
+                    </ThemedText>
                   </Pressable>
                 </>
               )}
@@ -193,9 +193,9 @@ export default function NotebookDetailScreen() {
 
             {state.notes.length === 0 ? (
               <View style={styles.center}>
-                <Text style={[styles.message, { color: colors.textMuted }]}>
+                <ThemedText style={[styles.message, { color: colors.textMuted }]}>
                   {t('notebookDetail.notesEmpty')}
-                </Text>
+                </ThemedText>
               </View>
             ) : (
               <FlatList
@@ -211,27 +211,30 @@ export default function NotebookDetailScreen() {
                         router.push({ pathname: '/note/[id]', params: { id: item.id } })
                       }
                     >
-                      <Text numberOfLines={1} style={[styles.noteTitle, { color: colors.text }]}>
+                      <ThemedText
+                        numberOfLines={1}
+                        style={[styles.noteTitle, { color: colors.text }]}
+                      >
                         {item.title.trim().length > 0 ? item.title : t('home.untitled')}
-                      </Text>
-                      <Text
+                      </ThemedText>
+                      <ThemedText
                         numberOfLines={1}
                         style={[styles.notePreview, { color: colors.textMuted }]}
                       >
                         {contentPreview(item.content) || t('home.noContent')}
-                      </Text>
-                      <Text style={[styles.noteTime, { color: colors.textMuted }]}>
+                      </ThemedText>
+                      <ThemedText style={[styles.noteTime, { color: colors.textMuted }]}>
                         {formatDateTime(item.updatedAt)}
-                      </Text>
+                      </ThemedText>
                     </Pressable>
                     <Pressable
                       accessibilityRole="button"
                       onPress={() => void removeNote(item.id)}
                       style={styles.remove}
                     >
-                      <Text style={[styles.removeLabel, { color: colors.accent }]}>
+                      <ThemedText style={[styles.removeLabel, { color: colors.accent }]}>
                         {t('notebookDetail.removeNote')}
-                      </Text>
+                      </ThemedText>
                     </Pressable>
                   </View>
                 )}
@@ -268,7 +271,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  actionLabel: { fontSize: 15, fontWeight: '600' },
+  actionLabel: { fontSize: 15 },
   list: { paddingHorizontal: spacing.lg, paddingBottom: spacing.xl },
   noteRow: {
     flexDirection: 'row',
@@ -278,11 +281,11 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   noteMain: { flex: 1, gap: 2 },
-  noteTitle: { fontSize: 16, fontWeight: '600' },
+  noteTitle: { fontSize: 16 },
   notePreview: { fontSize: 14 },
   noteTime: { fontSize: 12, marginTop: 2 },
   remove: { paddingHorizontal: spacing.sm, paddingVertical: spacing.sm },
-  removeLabel: { fontSize: 13, fontWeight: '600' },
+  removeLabel: { fontSize: 13 },
   center: {
     flex: 1,
     alignItems: 'center',

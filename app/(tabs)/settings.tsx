@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Pressable, StyleSheet, Text, useColorScheme } from 'react-native';
+import { Pressable, StyleSheet, useColorScheme } from 'react-native';
 
 import type { VaultStage } from '@/features/vault';
 import { PrimaryButton } from '@/ui/components/primary-button';
@@ -9,6 +9,7 @@ import { Screen } from '@/ui/components/screen';
 import { t } from '@/ui/i18n';
 import { useAppServices } from '@/ui/providers/app-provider';
 import { getTheme, spacing } from '@/ui/theme/tokens';
+import { ThemedText } from '@/ui/components/themed-text';
 
 type Busy = 'none' | 'reconcile' | 'export' | 'importFile' | 'importFolder' | 'diagnostics';
 
@@ -153,7 +154,9 @@ export default function SettingsScreen() {
       <InfoCard>{t('settings.language')}</InfoCard>
       <InfoCard>{t('vault.zipNote')}</InfoCard>
 
-      <Text style={[styles.section, { color: colors.textMuted }]}>{t('vault.section')}</Text>
+      <ThemedText style={[styles.section, { color: colors.textMuted }]}>
+        {t('vault.section')}
+      </ThemedText>
       <PrimaryButton
         label={t('vault.export')}
         loading={busy === 'export'}
@@ -175,13 +178,13 @@ export default function SettingsScreen() {
         onPress={() => void runImport('folder')}
       />
       {stage && busy !== 'reconcile' ? (
-        <Text
+        <ThemedText
           accessibilityRole="text"
           accessibilityLiveRegion="polite"
           style={[styles.stage, { color: colors.accent }]}
         >
           {stageLabel(stage)}
-        </Text>
+        </ThemedText>
       ) : null}
 
       <PrimaryButton
@@ -201,17 +204,21 @@ export default function SettingsScreen() {
       {summary ? <InfoCard>{summary}</InfoCard> : null}
 
       <Pressable accessibilityRole="link" onPress={() => router.push('/templates')}>
-        <Text style={[styles.link, { color: colors.accent }]}>{t('settings.templates')}</Text>
+        <ThemedText style={[styles.link, { color: colors.accent }]}>
+          {t('settings.templates')}
+        </ThemedText>
       </Pressable>
       <Pressable accessibilityRole="link" onPress={() => router.push('/phase0')}>
-        <Text style={[styles.link, { color: colors.accent }]}>{t('settings.phase0')}</Text>
+        <ThemedText style={[styles.link, { color: colors.accent }]}>
+          {t('settings.phase0')}
+        </ThemedText>
       </Pressable>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  section: { fontSize: 13, fontWeight: '600', marginTop: spacing.md },
-  stage: { fontSize: 14, fontWeight: '600' },
-  link: { fontSize: 15, fontWeight: '600', marginTop: spacing.sm },
+  section: { fontSize: 13, marginTop: spacing.md },
+  stage: { fontSize: 14 },
+  link: { fontSize: 15, marginTop: spacing.sm },
 });

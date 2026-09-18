@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { Image, Pressable, StyleSheet, Text, useColorScheme, View } from 'react-native';
+import { Image, Pressable, StyleSheet, useColorScheme, View } from 'react-native';
 
 import { useVoicePlayer } from '@/core/platform';
 import type { AttachmentView } from '@/features/attachments';
 import { formatClock } from '@/ui/format/duration';
 import { t } from '@/ui/i18n';
 import { getTheme, radius, spacing } from '@/ui/theme/tokens';
+import { ThemedText } from '@/ui/components/themed-text';
 
 type AttachmentSectionProps = {
   views: AttachmentView[];
@@ -46,13 +47,15 @@ export function AttachmentSection({
       onPress={onPress}
       style={[styles.addButton, { borderColor: colors.border, opacity: busy ? 0.5 : 1 }]}
     >
-      <Text style={[styles.addLabel, { color: colors.accent }]}>{label}</Text>
+      <ThemedText style={[styles.addLabel, { color: colors.accent }]}>{label}</ThemedText>
     </Pressable>
   );
 
   return (
     <View style={[styles.section, { borderTopColor: colors.border }]}>
-      <Text style={[styles.title, { color: colors.textMuted }]}>{t('attachments.title')}</Text>
+      <ThemedText style={[styles.title, { color: colors.textMuted }]}>
+        {t('attachments.title')}
+      </ThemedText>
 
       <View style={styles.addRow}>
         {addButton(t('attachments.addGallery'), onAddGallery, t('attachments.addGallery'))}
@@ -61,7 +64,9 @@ export function AttachmentSection({
       </View>
 
       {views.length === 0 ? (
-        <Text style={[styles.message, { color: colors.textMuted }]}>{t('attachments.empty')}</Text>
+        <ThemedText style={[styles.message, { color: colors.textMuted }]}>
+          {t('attachments.empty')}
+        </ThemedText>
       ) : (
         views.map((view) => {
           const { attachment } = view;
@@ -76,18 +81,18 @@ export function AttachmentSection({
                   { borderColor: colors.border, backgroundColor: colors.surface },
                 ]}
               >
-                <Text style={[styles.unavailable, { color: colors.textMuted }]}>
+                <ThemedText style={[styles.unavailable, { color: colors.textMuted }]}>
                   {t('attachments.unavailable')}
-                </Text>
+                </ThemedText>
                 <Pressable
                   accessibilityRole="button"
                   accessibilityLabel={t('attachments.delete')}
                   disabled={busy}
                   onPress={() => onDelete(view)}
                 >
-                  <Text style={[styles.delete, { color: colors.danger }]}>
+                  <ThemedText style={[styles.delete, { color: colors.danger }]}>
                     {t('attachments.delete')}
-                  </Text>
+                  </ThemedText>
                 </Pressable>
               </View>
             );
@@ -114,9 +119,9 @@ export function AttachmentSection({
                   onPress={() => onDelete(view)}
                   style={styles.imageDelete}
                 >
-                  <Text style={[styles.delete, { color: colors.danger }]}>
+                  <ThemedText style={[styles.delete, { color: colors.danger }]}>
                     {t('attachments.delete')}
-                  </Text>
+                  </ThemedText>
                 </Pressable>
               </View>
             );
@@ -142,13 +147,13 @@ export function AttachmentSection({
                   onPress={() => player.toggle(attachment.id, view.uri)}
                   style={[styles.playButton, { backgroundColor: colors.accentMuted }]}
                 >
-                  <Text style={[styles.playLabel, { color: colors.accent }]}>
+                  <ThemedText style={[styles.playLabel, { color: colors.accent }]}>
                     {playing ? t('attachments.pause') : t('attachments.play')}
-                  </Text>
+                  </ThemedText>
                 </Pressable>
-                <Text style={[styles.progress, { color: colors.textMuted }]}>
+                <ThemedText style={[styles.progress, { color: colors.textMuted }]}>
                   {`${formatClock(position)} / ${formatClock(duration)}`}
-                </Text>
+                </ThemedText>
                 <Pressable
                   accessibilityRole="button"
                   accessibilityLabel={t('attachments.delete')}
@@ -156,9 +161,9 @@ export function AttachmentSection({
                   onPress={() => onDelete(view)}
                   style={styles.rowDelete}
                 >
-                  <Text style={[styles.delete, { color: colors.danger }]}>
+                  <ThemedText style={[styles.delete, { color: colors.danger }]}>
                     {t('attachments.delete')}
-                  </Text>
+                  </ThemedText>
                 </Pressable>
               </View>
             );
@@ -169,18 +174,18 @@ export function AttachmentSection({
               key={attachment.id}
               style={[styles.row, { borderColor: colors.border, backgroundColor: colors.surface }]}
             >
-              <Text style={[styles.fileName, { color: colors.text }]} numberOfLines={1}>
+              <ThemedText style={[styles.fileName, { color: colors.text }]} numberOfLines={1}>
                 {attachment.originalName ?? attachment.relativePath}
-              </Text>
+              </ThemedText>
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel={t('attachments.delete')}
                 disabled={busy}
                 onPress={() => onDelete(view)}
               >
-                <Text style={[styles.delete, { color: colors.danger }]}>
+                <ThemedText style={[styles.delete, { color: colors.danger }]}>
                   {t('attachments.delete')}
-                </Text>
+                </ThemedText>
               </Pressable>
             </View>
           );
@@ -197,7 +202,7 @@ const styles = StyleSheet.create({
     borderTopWidth: StyleSheet.hairlineWidth,
     gap: spacing.sm,
   },
-  title: { fontSize: 13, fontWeight: '600' },
+  title: { fontSize: 13 },
   addRow: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   addButton: {
     borderWidth: StyleSheet.hairlineWidth,
@@ -205,7 +210,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
   },
-  addLabel: { fontSize: 14, fontWeight: '600' },
+  addLabel: { fontSize: 14 },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -223,11 +228,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
   },
-  playLabel: { fontSize: 14, fontWeight: '600' },
+  playLabel: { fontSize: 14 },
   progress: { flex: 1, fontSize: 13 },
   rowDelete: { marginLeft: 'auto' },
-  fileName: { flex: 1, fontSize: 14, fontWeight: '600' },
-  delete: { fontSize: 14, fontWeight: '600' },
+  fileName: { flex: 1, fontSize: 14 },
+  delete: { fontSize: 14 },
   unavailable: { flex: 1, fontSize: 14 },
   message: { fontSize: 14 },
 });

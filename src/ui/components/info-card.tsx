@@ -1,29 +1,40 @@
-import { StyleSheet, Text, View, useColorScheme } from 'react-native';
+import { StyleSheet, View, useColorScheme } from 'react-native';
 
-import { getTheme, spacing } from '@/ui/theme/tokens';
+import { ThemedText } from '@/ui/components/themed-text';
+import { getTheme, radius, spacing } from '@/ui/theme';
 
 type InfoCardProps = {
   children: string;
+  tone?: 'neutral' | 'accent' | 'danger';
 };
 
-/** Minimal information card used by placeholder (non-feature) screens. */
-export function InfoCard({ children }: InfoCardProps) {
+/** Quiet inline note (hints, degraded-mode notices, error messages). */
+export function InfoCard({ children, tone = 'neutral' }: InfoCardProps) {
   const colors = getTheme(useColorScheme());
+
+  const background =
+    tone === 'accent'
+      ? colors.accentMuted
+      : tone === 'danger'
+        ? colors.dangerMuted
+        : colors.surface;
+  const textColor =
+    tone === 'accent' ? colors.accent : tone === 'danger' ? colors.danger : colors.textMuted;
+
   return (
-    <View
-      style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}
-      accessibilityRole="summary"
-    >
-      <Text style={[styles.text, { color: colors.textMuted }]}>{children}</Text>
+    <View accessibilityRole="summary" style={[styles.card, { backgroundColor: background }]}>
+      <ThemedText selectable variant="subhead" color={textColor}>
+        {children}
+      </ThemedText>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: 10,
-    padding: spacing.lg,
+    borderRadius: radius.md,
+    borderCurve: 'continuous',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
   },
-  text: { fontSize: 15, lineHeight: 20 },
 });

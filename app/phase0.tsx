@@ -1,12 +1,13 @@
 import { Stack } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View, useColorScheme } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View, useColorScheme } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { File, Paths } from 'expo-file-system';
 
 import { runAllPhase0Checks, type CheckResult } from '@/phase0';
 import { t } from '@/ui/i18n';
 import { getTheme, radius, spacing } from '@/ui/theme/tokens';
+import { ThemedText } from '@/ui/components/themed-text';
 
 function persistResults(collected: CheckResult[]): void {
   // One machine-readable line for device verification via logcat/Metro.
@@ -65,32 +66,32 @@ export default function Phase0Screen() {
         edges={['bottom']}
       >
         <ScrollView contentContainerStyle={styles.content}>
-          <Text style={[styles.disclaimer, { color: colors.textMuted }]}>
+          <ThemedText style={[styles.disclaimer, { color: colors.textMuted }]}>
             {t('phase0.disclaimer')}
-          </Text>
+          </ThemedText>
 
           <Pressable
             accessibilityRole="button"
             onPress={() => void rerun()}
             style={[styles.button, { backgroundColor: colors.accent }]}
           >
-            <Text style={styles.buttonLabel}>{t('phase0.run')}</Text>
+            <ThemedText style={styles.buttonLabel}>{t('phase0.run')}</ThemedText>
           </Pressable>
 
-          <Text style={[styles.summary, { color: colors.text }]}>
+          <ThemedText style={[styles.summary, { color: colors.text }]}>
             {running
               ? t('phase0.running')
               : `${t('phase0.ready')} OK: ${passed} / ${t('phase0.summary.fail')}: ${failed} / ${t(
                   'phase0.summary.info',
                 )}: ${infoCount}`}
-          </Text>
+          </ThemedText>
 
           {results.map((result) => (
             <View
               key={result.name}
               style={[styles.row, { backgroundColor: colors.surface, borderColor: colors.border }]}
             >
-              <Text
+              <ThemedText
                 style={[
                   styles.badge,
                   {
@@ -104,11 +105,13 @@ export default function Phase0Screen() {
                 ]}
               >
                 {result.status.toUpperCase()}
-              </Text>
+              </ThemedText>
               <View style={styles.rowBody}>
-                <Text style={[styles.name, { color: colors.text }]}>{result.name}</Text>
+                <ThemedText style={[styles.name, { color: colors.text }]}>{result.name}</ThemedText>
                 {result.detail ? (
-                  <Text style={[styles.detail, { color: colors.textMuted }]}>{result.detail}</Text>
+                  <ThemedText style={[styles.detail, { color: colors.textMuted }]}>
+                    {result.detail}
+                  </ThemedText>
                 ) : null}
               </View>
             </View>
@@ -129,8 +132,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  buttonLabel: { color: '#FFFFFF', fontSize: 16, fontWeight: '600' },
-  summary: { fontSize: 15, fontWeight: '600', marginTop: spacing.sm },
+  buttonLabel: { color: '#FFFFFF', fontSize: 16 },
+  summary: { fontSize: 15, marginTop: spacing.sm },
   row: {
     flexDirection: 'row',
     gap: spacing.md,
@@ -138,8 +141,8 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     padding: spacing.md,
   },
-  badge: { fontSize: 12, fontWeight: '700', width: 44 },
+  badge: { fontSize: 12, width: 44 },
   rowBody: { flex: 1, gap: 2 },
-  name: { fontSize: 14, fontWeight: '600' },
+  name: { fontSize: 14 },
   detail: { fontSize: 12, lineHeight: 17 },
 });

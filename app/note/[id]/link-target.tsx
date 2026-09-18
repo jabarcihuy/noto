@@ -6,7 +6,6 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  Text,
   useColorScheme,
   View,
 } from 'react-native';
@@ -16,6 +15,7 @@ import { formatDateTime } from '@/ui/format/date';
 import { t } from '@/ui/i18n';
 import { useAppServices } from '@/ui/providers/app-provider';
 import { getTheme, radius, spacing } from '@/ui/theme/tokens';
+import { ThemedText } from '@/ui/components/themed-text';
 
 type Candidate = Note & { notebookName: string | null };
 
@@ -76,18 +76,22 @@ export default function LinkTargetScreen() {
         {candidates === null ? (
           <View style={styles.center}>
             <ActivityIndicator color={colors.accent} />
-            <Text style={[styles.message, { color: colors.textMuted }]}>{t('link.loading')}</Text>
+            <ThemedText style={[styles.message, { color: colors.textMuted }]}>
+              {t('link.loading')}
+            </ThemedText>
           </View>
         ) : (
           <ScrollView contentContainerStyle={styles.content}>
-            <Text style={[styles.intro, { color: colors.textMuted }]}>
+            <ThemedText style={[styles.intro, { color: colors.textMuted }]}>
               {t('link.ambiguousMessage')}
-            </Text>
-            <Text style={[styles.target, { color: colors.text }]}>{`[[${target}]]`}</Text>
+            </ThemedText>
+            <ThemedText
+              style={[styles.target, { color: colors.text }]}
+            >{`[[${target}]]`}</ThemedText>
             {candidates.length === 0 ? (
-              <Text style={[styles.message, { color: colors.textMuted }]}>
+              <ThemedText style={[styles.message, { color: colors.textMuted }]}>
                 {t('link.candidatesEmpty')}
-              </Text>
+              </ThemedText>
             ) : (
               candidates.map((note) => (
                 <Pressable
@@ -104,12 +108,12 @@ export default function LinkTargetScreen() {
                     },
                   ]}
                 >
-                  <Text style={[styles.rowTitle, { color: colors.text }]}>
+                  <ThemedText style={[styles.rowTitle, { color: colors.text }]}>
                     {note.title.trim() || t('home.untitled')}
-                  </Text>
-                  <Text style={[styles.rowMeta, { color: colors.textMuted }]}>
+                  </ThemedText>
+                  <ThemedText style={[styles.rowMeta, { color: colors.textMuted }]}>
                     {note.notebookName ?? t('note.noneNotebook')} · {formatDateTime(note.updatedAt)}
-                  </Text>
+                  </ThemedText>
                 </Pressable>
               ))
             )}
@@ -118,9 +122,9 @@ export default function LinkTargetScreen() {
               onPress={() => router.back()}
               style={styles.cancel}
             >
-              <Text style={[styles.cancelLabel, { color: colors.accent }]}>
+              <ThemedText style={[styles.cancelLabel, { color: colors.accent }]}>
                 {t('common.cancel')}
-              </Text>
+              </ThemedText>
             </Pressable>
           </ScrollView>
         )}
@@ -133,7 +137,7 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   content: { padding: spacing.lg, gap: spacing.sm },
   intro: { fontSize: 14 },
-  target: { fontSize: 16, fontWeight: '600' },
+  target: { fontSize: 16 },
   row: {
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: radius.md,
@@ -141,10 +145,10 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     gap: 2,
   },
-  rowTitle: { fontSize: 16, fontWeight: '600' },
+  rowTitle: { fontSize: 16 },
   rowMeta: { fontSize: 12 },
   cancel: { paddingVertical: spacing.md, alignItems: 'center' },
-  cancelLabel: { fontSize: 15, fontWeight: '600' },
+  cancelLabel: { fontSize: 15 },
   center: {
     flex: 1,
     alignItems: 'center',

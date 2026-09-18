@@ -1,6 +1,6 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, Linking, Pressable, StyleSheet, Text, useColorScheme, View } from 'react-native';
+import { Alert, Linking, Pressable, StyleSheet, useColorScheme, View } from 'react-native';
 
 import { useVoicePlayer, useVoiceRecorder, type PermissionResult } from '@/core/platform';
 import { buildVoiceOriginalName } from '@/features/attachments';
@@ -9,6 +9,7 @@ import { formatClock } from '@/ui/format/duration';
 import { t } from '@/ui/i18n';
 import { useAppServices } from '@/ui/providers/app-provider';
 import { getTheme, radius, spacing } from '@/ui/theme/tokens';
+import { ThemedText } from '@/ui/components/themed-text';
 
 type Phase = 'idle' | 'recording' | 'ready' | 'saving' | 'error';
 
@@ -144,13 +145,13 @@ export default function RecordVoiceScreen() {
         <View style={styles.body}>
           {!permissionGranted ? (
             <>
-              <Text style={[styles.message, { color: colors.text }]}>
+              <ThemedText style={[styles.message, { color: colors.text }]}>
                 {t('attachments.permMicrophone')}
-              </Text>
+              </ThemedText>
               {permission?.state === 'unavailable' ? (
-                <Text style={[styles.message, { color: colors.textMuted }]}>
+                <ThemedText style={[styles.message, { color: colors.textMuted }]}>
                   {t('attachments.permUnavailable')}
-                </Text>
+                </ThemedText>
               ) : (
                 <>
                   <PrimaryButton
@@ -162,9 +163,9 @@ export default function RecordVoiceScreen() {
                     onPress={() => void Linking.openSettings()}
                     style={styles.linkButton}
                   >
-                    <Text style={[styles.link, { color: colors.accent }]}>
+                    <ThemedText style={[styles.link, { color: colors.accent }]}>
                       {t('attachments.openSettings')}
-                    </Text>
+                    </ThemedText>
                   </Pressable>
                 </>
               )}
@@ -173,20 +174,20 @@ export default function RecordVoiceScreen() {
             <>
               <View style={styles.recordingRow}>
                 <View style={[styles.dot, { backgroundColor: colors.danger }]} />
-                <Text style={[styles.recordingLabel, { color: colors.danger }]}>
+                <ThemedText style={[styles.recordingLabel, { color: colors.danger }]}>
                   {t('attachments.recording')}
-                </Text>
+                </ThemedText>
               </View>
-              <Text style={[styles.clock, { color: colors.text }]}>
+              <ThemedText style={[styles.clock, { color: colors.text }]}>
                 {formatClock(recorder.durationMs)}
-              </Text>
+              </ThemedText>
               <PrimaryButton label={t('attachments.recordStop')} onPress={() => void stop()} />
             </>
           ) : phase === 'ready' || phase === 'saving' ? (
             <>
-              <Text style={[styles.message, { color: colors.textMuted }]}>
+              <ThemedText style={[styles.message, { color: colors.textMuted }]}>
                 {t('attachments.recordReady')}
-              </Text>
+              </ThemedText>
               <View style={styles.previewRow}>
                 <Pressable
                   accessibilityRole="button"
@@ -196,13 +197,13 @@ export default function RecordVoiceScreen() {
                   onPress={() => tempUri && player.toggle('preview', tempUri)}
                   style={[styles.previewButton, { backgroundColor: colors.accentMuted }]}
                 >
-                  <Text style={[styles.previewLabel, { color: colors.accent }]}>
+                  <ThemedText style={[styles.previewLabel, { color: colors.accent }]}>
                     {player.isPlaying ? t('attachments.pause') : t('attachments.play')}
-                  </Text>
+                  </ThemedText>
                 </Pressable>
-                <Text style={[styles.clock, { color: colors.textMuted }]}>
+                <ThemedText style={[styles.clock, { color: colors.textMuted }]}>
                   {`${formatClock(player.positionMs)} / ${formatClock(recordedMs)}`}
-                </Text>
+                </ThemedText>
               </View>
               <View style={styles.actions}>
                 <PrimaryButton
@@ -219,16 +220,16 @@ export default function RecordVoiceScreen() {
             </>
           ) : phase === 'error' ? (
             <>
-              <Text style={[styles.message, { color: colors.danger }]}>
+              <ThemedText style={[styles.message, { color: colors.danger }]}>
                 {t('attachments.recordError')}
-              </Text>
+              </ThemedText>
               <PrimaryButton label={t('common.retry')} onPress={() => setPhase('idle')} />
             </>
           ) : (
             <>
-              <Text style={[styles.message, { color: colors.textMuted }]}>
+              <ThemedText style={[styles.message, { color: colors.textMuted }]}>
                 {t('attachments.recordHint')}
-              </Text>
+              </ThemedText>
               <PrimaryButton
                 label={t('attachments.recordStart')}
                 onPress={() => void start()}
@@ -253,8 +254,8 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   dot: { width: 12, height: 12, borderRadius: 6 },
-  recordingLabel: { fontSize: 16, fontWeight: '700' },
-  clock: { fontSize: 28, fontWeight: '700', textAlign: 'center' },
+  recordingLabel: { fontSize: 16 },
+  clock: { fontSize: 28, textAlign: 'center' },
   previewRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -266,8 +267,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
   },
-  previewLabel: { fontSize: 15, fontWeight: '600' },
+  previewLabel: { fontSize: 15 },
   actions: { flexDirection: 'row', justifyContent: 'center', gap: spacing.md },
   linkButton: { alignItems: 'center', paddingVertical: spacing.sm },
-  link: { fontSize: 15, fontWeight: '600' },
+  link: { fontSize: 15 },
 });

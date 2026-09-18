@@ -1,10 +1,11 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, useColorScheme, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, useColorScheme, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { initializeAppDatabase, type AppServices } from '@/composition';
 import { t } from '@/ui/i18n';
 import { getTheme, radius, spacing } from '@/ui/theme/tokens';
+import { ThemedText } from '@/ui/components/themed-text';
 
 type AppState =
   | { status: 'initializing' }
@@ -53,7 +54,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return (
       <CenterState>
         <ActivityIndicator color={colors.accent} />
-        <Text style={[styles.message, { color: colors.textMuted }]}>{t('startup.loading')}</Text>
+        <ThemedText style={[styles.message, { color: colors.textMuted }]}>
+          {t('startup.loading')}
+        </ThemedText>
       </CenterState>
     );
   }
@@ -61,10 +64,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   if (state.status === 'error') {
     return (
       <CenterState>
-        <Text style={[styles.title, { color: colors.text }]}>{t('startup.errorTitle')}</Text>
-        <Text style={[styles.message, { color: colors.textMuted }]}>
+        <ThemedText style={[styles.title, { color: colors.text }]}>
+          {t('startup.errorTitle')}
+        </ThemedText>
+        <ThemedText style={[styles.message, { color: colors.textMuted }]}>
           {t('startup.errorMessage')}
-        </Text>
+        </ThemedText>
         <Pressable
           accessibilityRole="button"
           onPress={() => {
@@ -73,7 +78,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           }}
           style={[styles.retry, { backgroundColor: colors.accent }]}
         >
-          <Text style={styles.retryLabel}>{t('startup.retry')}</Text>
+          <ThemedText style={styles.retryLabel}>{t('startup.retry')}</ThemedText>
         </Pressable>
       </CenterState>
     );
@@ -100,7 +105,7 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     padding: spacing.xl,
   },
-  title: { fontSize: 22, fontWeight: '600', textAlign: 'center' },
+  title: { fontSize: 22, textAlign: 'center' },
   message: { fontSize: 15, textAlign: 'center' },
   retry: {
     minHeight: 48,
@@ -109,5 +114,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: spacing.xl,
   },
-  retryLabel: { color: '#FFFFFF', fontSize: 16, fontWeight: '600' },
+  retryLabel: { color: '#FFFFFF', fontSize: 16 },
 });

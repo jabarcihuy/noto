@@ -24,6 +24,8 @@ const id = {
   'startup.retry': 'Coba lagi',
 
   'home.title': 'Beranda',
+  'home.tagline': 'Pikiranmu, tersimpan rapi.',
+  'home.emptyTitle': 'Mulai dari sini',
   'home.capture': 'Catatan Baru',
   'home.captureTemplate': 'Dari template',
   'home.captureUrl': 'Simpan tautan',

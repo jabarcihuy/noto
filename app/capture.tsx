@@ -5,7 +5,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
-  Text,
   TextInput,
   useColorScheme,
   View,
@@ -18,6 +17,7 @@ import { PrimaryButton } from '@/ui/components/primary-button';
 import { t } from '@/ui/i18n';
 import { useAppServices } from '@/ui/providers/app-provider';
 import { getTheme, radius, spacing } from '@/ui/theme/tokens';
+import { ThemedText } from '@/ui/components/themed-text';
 
 type Mode = 'text' | 'url' | 'share';
 
@@ -159,18 +159,18 @@ export default function CaptureScreen() {
       >
         <View style={styles.body}>
           {templateName && !isShare ? (
-            <Text style={[styles.template, { color: colors.accent }]}>
+            <ThemedText style={[styles.template, { color: colors.accent }]}>
               {`${t('capture.templateLabel')}: ${templateName}`}
-            </Text>
+            </ThemedText>
           ) : null}
           {templateNotice ? <InfoCard>{templateNotice}</InfoCard> : null}
           {shareNotice ? <InfoCard>{shareNotice}</InfoCard> : null}
 
           {isShare ? (
             <View style={styles.shareList}>
-              <Text style={[styles.label, { color: colors.textMuted }]}>
+              <ThemedText style={[styles.label, { color: colors.textMuted }]}>
                 {t('capture.shareReview')}
-              </Text>
+              </ThemedText>
               {sharePayloads.map((payload, index) => (
                 <View
                   key={`${payload.shareType}-${index}`}
@@ -179,20 +179,20 @@ export default function CaptureScreen() {
                     { borderColor: colors.border, backgroundColor: colors.surface },
                   ]}
                 >
-                  <Text style={[styles.shareKind, { color: colors.accent }]}>
+                  <ThemedText style={[styles.shareKind, { color: colors.accent }]}>
                     {payload.shareType}
-                  </Text>
-                  <Text numberOfLines={3} style={[styles.shareValue, { color: colors.text }]}>
+                  </ThemedText>
+                  <ThemedText numberOfLines={3} style={[styles.shareValue, { color: colors.text }]}>
                     {payload.originalName ?? payload.value}
-                  </Text>
+                  </ThemedText>
                 </View>
               ))}
             </View>
           ) : mode === 'url' ? (
             <>
-              <Text style={[styles.label, { color: colors.textMuted }]}>
+              <ThemedText style={[styles.label, { color: colors.textMuted }]}>
                 {t('capture.urlLabel')}
-              </Text>
+              </ThemedText>
               <TextInput
                 value={url}
                 onChangeText={setUrl}
@@ -212,13 +212,15 @@ export default function CaptureScreen() {
                   },
                 ]}
               />
-              <Text style={[styles.hint, { color: colors.textMuted }]}>{t('capture.urlHint')}</Text>
+              <ThemedText style={[styles.hint, { color: colors.textMuted }]}>
+                {t('capture.urlHint')}
+              </ThemedText>
             </>
           ) : (
             <>
-              <Text style={[styles.label, { color: colors.textMuted }]}>
+              <ThemedText style={[styles.label, { color: colors.textMuted }]}>
                 {t('capture.titleLabel')}
-              </Text>
+              </ThemedText>
               <TextInput
                 value={title}
                 onChangeText={setTitle}
@@ -236,9 +238,9 @@ export default function CaptureScreen() {
                 ]}
               />
 
-              <Text style={[styles.label, { color: colors.textMuted }]}>
+              <ThemedText style={[styles.label, { color: colors.textMuted }]}>
                 {t('capture.contentLabel')}
-              </Text>
+              </ThemedText>
               <TextInput
                 value={content}
                 onChangeText={setContent}
@@ -260,7 +262,9 @@ export default function CaptureScreen() {
             </>
           )}
 
-          {error ? <Text style={[styles.error, { color: colors.danger }]}>{error}</Text> : null}
+          {error ? (
+            <ThemedText style={[styles.error, { color: colors.danger }]}>{error}</ThemedText>
+          ) : null}
 
           <View style={styles.actions}>
             <PrimaryButton
@@ -285,8 +289,8 @@ export default function CaptureScreen() {
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   body: { flex: 1, padding: spacing.lg, gap: spacing.sm },
-  label: { fontSize: 13, fontWeight: '600' },
-  template: { fontSize: 13, fontWeight: '600' },
+  label: { fontSize: 13 },
+  template: { fontSize: 13 },
   hint: { fontSize: 13 },
   titleInput: {
     minHeight: 48,
@@ -294,7 +298,6 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     paddingHorizontal: spacing.md,
     fontSize: 18,
-    fontWeight: '600',
   },
   urlInput: {
     minHeight: 48,
@@ -319,7 +322,7 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     gap: spacing.xs,
   },
-  shareKind: { fontSize: 12, fontWeight: '700' },
+  shareKind: { fontSize: 12 },
   shareValue: { fontSize: 15 },
   error: { fontSize: 14 },
   actions: {

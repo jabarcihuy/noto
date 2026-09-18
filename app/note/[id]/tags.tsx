@@ -5,7 +5,6 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  Text,
   TextInput,
   useColorScheme,
   View,
@@ -17,6 +16,7 @@ import { PrimaryButton } from '@/ui/components/primary-button';
 import { t } from '@/ui/i18n';
 import { useAppServices } from '@/ui/providers/app-provider';
 import { getTheme, radius, spacing } from '@/ui/theme/tokens';
+import { ThemedText } from '@/ui/components/themed-text';
 
 type TagsState = { tags: Tag[]; allTags: Tag[] };
 
@@ -112,9 +112,13 @@ export default function NoteTagsScreen() {
           </View>
         ) : (
           <ScrollView contentContainerStyle={styles.content}>
-            <Text style={[styles.section, { color: colors.textMuted }]}>{t('note.tags')}</Text>
+            <ThemedText style={[styles.section, { color: colors.textMuted }]}>
+              {t('note.tags')}
+            </ThemedText>
             {state.tags.length === 0 ? (
-              <Text style={[styles.message, { color: colors.textMuted }]}>{t('tags.none')}</Text>
+              <ThemedText style={[styles.message, { color: colors.textMuted }]}>
+                {t('tags.none')}
+              </ThemedText>
             ) : (
               <View style={styles.chips}>
                 {state.tags.map((tag) => (
@@ -126,9 +130,9 @@ export default function NoteTagsScreen() {
                     onPress={() => void remove(tag)}
                     style={[styles.chip, { backgroundColor: colors.accentMuted }]}
                   >
-                    <Text style={[styles.chipText, { color: colors.accent }]}>
+                    <ThemedText style={[styles.chipText, { color: colors.accent }]}>
                       #{tag.displayName} ×
-                    </Text>
+                    </ThemedText>
                   </Pressable>
                 ))}
               </View>
@@ -159,13 +163,15 @@ export default function NoteTagsScreen() {
                 loading={busy}
               />
             </View>
-            {error ? <Text style={[styles.error, { color: colors.danger }]}>{error}</Text> : null}
+            {error ? (
+              <ThemedText style={[styles.error, { color: colors.danger }]}>{error}</ThemedText>
+            ) : null}
 
             {suggestions.length > 0 ? (
               <>
-                <Text style={[styles.section, { color: colors.textMuted }]}>
+                <ThemedText style={[styles.section, { color: colors.textMuted }]}>
                   {t('tags.available')}
-                </Text>
+                </ThemedText>
                 <View style={styles.chips}>
                   {suggestions.map((tag) => (
                     <Pressable
@@ -175,9 +181,9 @@ export default function NoteTagsScreen() {
                       onPress={() => void add(tag.displayName)}
                       style={[styles.chip, { borderColor: colors.border }]}
                     >
-                      <Text style={[styles.chipText, { color: colors.text }]}>
+                      <ThemedText style={[styles.chipText, { color: colors.text }]}>
                         #{tag.displayName}
-                      </Text>
+                      </ThemedText>
                     </Pressable>
                   ))}
                 </View>
@@ -193,7 +199,7 @@ export default function NoteTagsScreen() {
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   content: { padding: spacing.lg, gap: spacing.sm },
-  section: { fontSize: 13, fontWeight: '600', marginTop: spacing.sm },
+  section: { fontSize: 13, marginTop: spacing.sm },
   message: { fontSize: 14 },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   chip: {
@@ -203,7 +209,7 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: 'transparent',
   },
-  chipText: { fontSize: 13, fontWeight: '600' },
+  chipText: { fontSize: 13 },
   addRow: { flexDirection: 'row', gap: spacing.sm, alignItems: 'center', marginTop: spacing.sm },
   input: {
     flex: 1,

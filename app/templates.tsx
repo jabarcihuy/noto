@@ -5,7 +5,6 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  Text,
   useColorScheme,
   View,
 } from 'react-native';
@@ -15,6 +14,7 @@ import { PrimaryButton } from '@/ui/components/primary-button';
 import { t } from '@/ui/i18n';
 import { useAppServices } from '@/ui/providers/app-provider';
 import { getTheme, radius, spacing } from '@/ui/theme/tokens';
+import { ThemedText } from '@/ui/components/themed-text';
 
 type State =
   { status: 'loading' } | { status: 'ready'; templates: Template[] } | { status: 'error' };
@@ -64,28 +64,32 @@ export default function TemplatesScreen() {
       <Stack.Screen options={{ headerShown: true, title: t('templates.title') }} />
       <View style={[styles.safe, { backgroundColor: colors.background }]}>
         <ScrollView contentContainerStyle={styles.content}>
-          <Text style={[styles.title, { color: colors.text }]}>{t('templates.title')}</Text>
-          <Text style={[styles.intro, { color: colors.textMuted }]}>{t('templates.intro')}</Text>
+          <ThemedText style={[styles.title, { color: colors.text }]}>
+            {t('templates.title')}
+          </ThemedText>
+          <ThemedText style={[styles.intro, { color: colors.textMuted }]}>
+            {t('templates.intro')}
+          </ThemedText>
 
           {state.status === 'loading' ? (
             <View style={styles.center}>
               <ActivityIndicator color={colors.accent} />
-              <Text style={[styles.message, { color: colors.textMuted }]}>
+              <ThemedText style={[styles.message, { color: colors.textMuted }]}>
                 {t('templates.loading')}
-              </Text>
+              </ThemedText>
             </View>
           ) : state.status === 'error' ? (
             <View style={styles.center}>
-              <Text style={[styles.message, { color: colors.textMuted }]}>
+              <ThemedText style={[styles.message, { color: colors.textMuted }]}>
                 {t('templates.error')}
-              </Text>
+              </ThemedText>
               <PrimaryButton label={t('common.retry')} onPress={retry} />
             </View>
           ) : state.templates.length === 0 ? (
             <View style={styles.center}>
-              <Text style={[styles.message, { color: colors.textMuted }]}>
+              <ThemedText style={[styles.message, { color: colors.textMuted }]}>
                 {t('templates.empty')}
-              </Text>
+              </ThemedText>
             </View>
           ) : (
             state.templates.map((template) => (
@@ -107,11 +111,13 @@ export default function TemplatesScreen() {
                   },
                 ]}
               >
-                <Text style={[styles.name, { color: colors.text }]}>{template.name}</Text>
+                <ThemedText style={[styles.name, { color: colors.text }]}>
+                  {template.name}
+                </ThemedText>
                 {template.description ? (
-                  <Text style={[styles.description, { color: colors.textMuted }]}>
+                  <ThemedText style={[styles.description, { color: colors.textMuted }]}>
                     {template.description}
-                  </Text>
+                  </ThemedText>
                 ) : null}
               </Pressable>
             ))
@@ -125,7 +131,7 @@ export default function TemplatesScreen() {
 const styles = StyleSheet.create({
   safe: { flex: 1 },
   content: { padding: spacing.lg, gap: spacing.md, paddingBottom: spacing.xxl },
-  title: { fontSize: 28, lineHeight: 34, fontWeight: '700' },
+  title: { fontSize: 28, lineHeight: 34 },
   intro: { fontSize: 14 },
   row: {
     borderWidth: StyleSheet.hairlineWidth,
@@ -133,7 +139,7 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     gap: spacing.xs,
   },
-  name: { fontSize: 16, fontWeight: '600' },
+  name: { fontSize: 16 },
   description: { fontSize: 14 },
   center: { alignItems: 'center', gap: spacing.md, paddingVertical: spacing.xl },
   message: { fontSize: 15, textAlign: 'center' },

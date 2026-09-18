@@ -8,7 +8,6 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  Text,
   TextInput,
   useColorScheme,
   View,
@@ -32,6 +31,7 @@ import { formatDateTime } from '@/ui/format/date';
 import { t } from '@/ui/i18n';
 import { useAppServices } from '@/ui/providers/app-provider';
 import { getTheme, radius, spacing } from '@/ui/theme/tokens';
+import { ThemedText } from '@/ui/components/themed-text';
 
 type LoadState = 'loading' | 'ready' | 'notFound' | 'error';
 type EditorValue = { title: string; content: string };
@@ -233,20 +233,26 @@ export default function NoteEditScreen() {
         {loadState === 'loading' ? (
           <View style={styles.center}>
             <ActivityIndicator color={colors.accent} />
-            <Text style={[styles.message, { color: colors.textMuted }]}>{t('note.loading')}</Text>
+            <ThemedText style={[styles.message, { color: colors.textMuted }]}>
+              {t('note.loading')}
+            </ThemedText>
           </View>
         ) : loadState === 'notFound' ? (
           <View style={styles.center}>
-            <Text style={[styles.message, { color: colors.textMuted }]}>{t('note.notFound')}</Text>
+            <ThemedText style={[styles.message, { color: colors.textMuted }]}>
+              {t('note.notFound')}
+            </ThemedText>
           </View>
         ) : loadState === 'error' ? (
           <View style={styles.center}>
-            <Text style={[styles.message, { color: colors.textMuted }]}>{t('note.error')}</Text>
+            <ThemedText style={[styles.message, { color: colors.textMuted }]}>
+              {t('note.error')}
+            </ThemedText>
           </View>
         ) : (
           <View style={styles.body}>
             <View style={styles.statusRow}>
-              <Text
+              <ThemedText
                 accessibilityRole="text"
                 style={[
                   styles.status,
@@ -261,12 +267,12 @@ export default function NoteEditScreen() {
                 ]}
               >
                 {statusLabel(status)}
-              </Text>
+              </ThemedText>
             </View>
 
-            <Text style={[styles.label, { color: colors.textMuted }]}>
+            <ThemedText style={[styles.label, { color: colors.textMuted }]}>
               {t('editor.titleLabel')}
-            </Text>
+            </ThemedText>
             <TextInput
               value={title}
               onChangeText={onChangeTitle}
@@ -276,9 +282,9 @@ export default function NoteEditScreen() {
               ]}
             />
 
-            <Text style={[styles.label, { color: colors.textMuted }]}>
+            <ThemedText style={[styles.label, { color: colors.textMuted }]}>
               {t('editor.contentLabel')}
-            </Text>
+            </ThemedText>
             <TextInput
               value={content}
               onChangeText={onChangeContent}
@@ -298,13 +304,13 @@ export default function NoteEditScreen() {
                   { borderColor: colors.border, backgroundColor: colors.surfaceRaised },
                 ]}
               >
-                <Text style={[styles.suggestLabel, { color: colors.textMuted }]}>
+                <ThemedText style={[styles.suggestLabel, { color: colors.textMuted }]}>
                   {t('link.suggestions')}
-                </Text>
+                </ThemedText>
                 {hasDuplicateTitles ? (
-                  <Text style={[styles.suggestHint, { color: colors.warning }]}>
+                  <ThemedText style={[styles.suggestHint, { color: colors.warning }]}>
                     {t('link.multipleMatches')}
-                  </Text>
+                  </ThemedText>
                 ) : null}
                 <ScrollView style={styles.suggestList} keyboardShouldPersistTaps="handled">
                   {suggestions.map((note) => (
@@ -314,15 +320,18 @@ export default function NoteEditScreen() {
                       onPress={() => pickSuggestion(note)}
                       style={styles.suggestRow}
                     >
-                      <Text numberOfLines={1} style={[styles.suggestTitle, { color: colors.text }]}>
+                      <ThemedText
+                        numberOfLines={1}
+                        style={[styles.suggestTitle, { color: colors.text }]}
+                      >
                         {note.title.trim() || t('home.untitled')}
-                      </Text>
-                      <Text
+                      </ThemedText>
+                      <ThemedText
                         numberOfLines={1}
                         style={[styles.suggestMeta, { color: colors.textMuted }]}
                       >
                         {formatDateTime(note.updatedAt)}
-                      </Text>
+                      </ThemedText>
                     </Pressable>
                   ))}
                 </ScrollView>
@@ -330,7 +339,9 @@ export default function NoteEditScreen() {
             ) : null}
 
             {status === 'error' ? (
-              <Text style={[styles.error, { color: colors.danger }]}>{t('editor.error')}</Text>
+              <ThemedText style={[styles.error, { color: colors.danger }]}>
+                {t('editor.error')}
+              </ThemedText>
             ) : null}
 
             <View style={styles.actions}>
@@ -355,15 +366,14 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   body: { flex: 1, padding: spacing.lg, gap: spacing.sm },
   statusRow: { alignItems: 'flex-end' },
-  status: { fontSize: 12, fontWeight: '600' },
-  label: { fontSize: 13, fontWeight: '600' },
+  status: { fontSize: 12 },
+  label: { fontSize: 13 },
   titleInput: {
     minHeight: 48,
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: radius.md,
     paddingHorizontal: spacing.md,
     fontSize: 18,
-    fontWeight: '600',
   },
   contentInput: {
     flex: 1,
@@ -381,11 +391,11 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
     gap: spacing.xs,
   },
-  suggestLabel: { fontSize: 12, fontWeight: '600' },
+  suggestLabel: { fontSize: 12 },
   suggestHint: { fontSize: 12 },
   suggestList: { maxHeight: 160 },
   suggestRow: { paddingVertical: spacing.sm },
-  suggestTitle: { fontSize: 15, fontWeight: '600' },
+  suggestTitle: { fontSize: 15 },
   suggestMeta: { fontSize: 12 },
   error: { fontSize: 14 },
   actions: {

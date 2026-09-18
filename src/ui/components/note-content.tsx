@@ -1,8 +1,9 @@
-import { StyleSheet, Text, type StyleProp, type TextStyle, useColorScheme } from 'react-native';
+import { StyleSheet, type StyleProp, type TextStyle, useColorScheme } from 'react-native';
 
 import { linkIdentityKey, segmentContent, type NoteLink, type Wikilink } from '@/features/links';
 import { normalizeTitleKey } from '@/features/notes/domain/note';
 import { getTheme } from '@/ui/theme/tokens';
+import { ThemedText } from '@/ui/components/themed-text';
 
 type NoteContentProps = {
   content: string;
@@ -27,7 +28,7 @@ export function NoteContent({ content, links, onPressLink, style }: NoteContentP
   );
 
   return (
-    <Text selectable style={style}>
+    <ThemedText selectable style={style}>
       {segmentContent(content).map((segment, index) => {
         if (segment.type === 'text') return segment.text;
         const noteLink = byIdentity.get(lookupKey(segment.link)) ?? null;
@@ -45,7 +46,7 @@ export function NoteContent({ content, links, onPressLink, style }: NoteContentP
             : segment.link.target;
 
         return (
-          <Text
+          <ThemedText
             key={index}
             accessibilityRole="link"
             onPress={() => onPressLink(segment.link, noteLink)}
@@ -58,10 +59,10 @@ export function NoteContent({ content, links, onPressLink, style }: NoteContentP
             ]}
           >
             {label}
-          </Text>
+          </ThemedText>
         );
       })}
-    </Text>
+    </ThemedText>
   );
 }
 

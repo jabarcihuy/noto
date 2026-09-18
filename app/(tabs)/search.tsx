@@ -5,7 +5,6 @@ import {
   FlatList,
   Pressable,
   StyleSheet,
-  Text,
   TextInput,
   useColorScheme,
   View,
@@ -30,6 +29,7 @@ import { SearchResultRow } from '@/ui/components/search-result-row';
 import { t } from '@/ui/i18n';
 import { useAppServices } from '@/ui/providers/app-provider';
 import { getTheme, radius, spacing } from '@/ui/theme/tokens';
+import { ThemedText } from '@/ui/components/themed-text';
 
 const PAGE_SIZE = 25;
 
@@ -270,9 +270,9 @@ export default function SearchScreen() {
         },
       ]}
     >
-      <Text style={[styles.chipText, { color: selected ? colors.accent : colors.text }]}>
+      <ThemedText style={[styles.chipText, { color: selected ? colors.accent : colors.text }]}>
         {selected ? `✓ ${label}` : label}
-      </Text>
+      </ThemedText>
     </Pressable>
   );
 
@@ -296,20 +296,24 @@ export default function SearchScreen() {
       {notice ? <InfoCard>{notice}</InfoCard> : null}
 
       <View style={styles.rowBetween}>
-        <Text style={[styles.section, { color: colors.textMuted }]}>
+        <ThemedText style={[styles.section, { color: colors.textMuted }]}>
           {t('search.filters')}
           {activeFilterCount > 0 ? ` · ${activeFilterCount} ${t('search.filtersActive')}` : ''}
-        </Text>
+        </ThemedText>
         {activeFilterCount > 0 ? (
           <Pressable accessibilityRole="button" onPress={clearFilters}>
-            <Text style={[styles.link, { color: colors.accent }]}>{t('search.clearFilters')}</Text>
+            <ThemedText style={[styles.link, { color: colors.accent }]}>
+              {t('search.clearFilters')}
+            </ThemedText>
           </Pressable>
         ) : null}
       </View>
 
       {availableTags.length > 0 ? (
         <View style={styles.filterBlock}>
-          <Text style={[styles.filterLabel, { color: colors.textMuted }]}>{t('search.tags')}</Text>
+          <ThemedText style={[styles.filterLabel, { color: colors.textMuted }]}>
+            {t('search.tags')}
+          </ThemedText>
           <View style={styles.chips}>
             {availableTags.map((tag) =>
               chip(
@@ -325,9 +329,9 @@ export default function SearchScreen() {
 
       {notebooks.length > 0 ? (
         <View style={styles.filterBlock}>
-          <Text style={[styles.filterLabel, { color: colors.textMuted }]}>
+          <ThemedText style={[styles.filterLabel, { color: colors.textMuted }]}>
             {t('search.notebook')}
-          </Text>
+          </ThemedText>
           <View style={styles.chips}>
             {chip(t('search.all'), notebookId === null, () => setNotebookId(null), 'nb-all')}
             {notebooks.map((notebook) =>
@@ -344,9 +348,9 @@ export default function SearchScreen() {
 
       {captureTypes.length > 0 ? (
         <View style={styles.filterBlock}>
-          <Text style={[styles.filterLabel, { color: colors.textMuted }]}>
+          <ThemedText style={[styles.filterLabel, { color: colors.textMuted }]}>
             {t('search.captureType')}
-          </Text>
+          </ThemedText>
           <View style={styles.chips}>
             {chip(t('search.all'), captureType === null, () => setCaptureType(null), 'type-all')}
             {captureTypes.map((type) =>
@@ -357,7 +361,9 @@ export default function SearchScreen() {
       ) : null}
 
       <View style={styles.filterBlock}>
-        <Text style={[styles.filterLabel, { color: colors.textMuted }]}>{t('search.date')}</Text>
+        <ThemedText style={[styles.filterLabel, { color: colors.textMuted }]}>
+          {t('search.date')}
+        </ThemedText>
         <View style={styles.chips}>
           {DATE_OPTIONS.map((option) =>
             chip(
@@ -377,7 +383,9 @@ export default function SearchScreen() {
       </View>
 
       <View style={styles.filterBlock}>
-        <Text style={[styles.filterLabel, { color: colors.textMuted }]}>{t('search.sort')}</Text>
+        <ThemedText style={[styles.filterLabel, { color: colors.textMuted }]}>
+          {t('search.sort')}
+        </ThemedText>
         <View style={styles.chips}>
           {SORT_OPTIONS.map((option) =>
             chip(option.label(), sort === option.value, () => setSort(option.value), option.value),
@@ -386,9 +394,13 @@ export default function SearchScreen() {
       </View>
 
       <View style={styles.rowBetween}>
-        <Text style={[styles.section, { color: colors.textMuted }]}>{t('search.savedTitle')}</Text>
+        <ThemedText style={[styles.section, { color: colors.textMuted }]}>
+          {t('search.savedTitle')}
+        </ThemedText>
         <Pressable accessibilityRole="button" onPress={() => setSaveOpen((value) => !value)}>
-          <Text style={[styles.link, { color: colors.accent }]}>{t('search.savedSave')}</Text>
+          <ThemedText style={[styles.link, { color: colors.accent }]}>
+            {t('search.savedSave')}
+          </ThemedText>
         </Pressable>
       </View>
       {saveOpen ? (
@@ -413,9 +425,13 @@ export default function SearchScreen() {
           />
         </View>
       ) : null}
-      {saveError ? <Text style={[styles.error, { color: colors.danger }]}>{saveError}</Text> : null}
+      {saveError ? (
+        <ThemedText style={[styles.error, { color: colors.danger }]}>{saveError}</ThemedText>
+      ) : null}
       {savedSearches.length === 0 ? (
-        <Text style={[styles.message, { color: colors.textMuted }]}>{t('search.savedEmpty')}</Text>
+        <ThemedText style={[styles.message, { color: colors.textMuted }]}>
+          {t('search.savedEmpty')}
+        </ThemedText>
       ) : (
         <View style={styles.chips}>
           {savedSearches.map((saved) => chip(saved.name, false, () => applySaved(saved), saved.id))}
@@ -451,23 +467,27 @@ export default function SearchScreen() {
           status === 'loading' ? (
             <View style={styles.center}>
               <ActivityIndicator color={colors.accent} />
-              <Text style={[styles.message, { color: colors.textMuted }]}>
+              <ThemedText style={[styles.message, { color: colors.textMuted }]}>
                 {t('search.loading')}
-              </Text>
+              </ThemedText>
             </View>
           ) : status === 'error' ? (
             <View style={styles.center}>
-              <Text style={[styles.message, { color: colors.textMuted }]}>{t('search.error')}</Text>
+              <ThemedText style={[styles.message, { color: colors.textMuted }]}>
+                {t('search.error')}
+              </ThemedText>
               <PrimaryButton label={t('common.retry')} onPress={() => void runSearch(0, false)} />
             </View>
           ) : (
             <View style={styles.center}>
-              <Text style={[styles.message, { color: colors.textMuted }]}>{emptyState}</Text>
+              <ThemedText style={[styles.message, { color: colors.textMuted }]}>
+                {emptyState}
+              </ThemedText>
               {hasCriteria && !noNotes ? (
                 <Pressable accessibilityRole="button" onPress={clearFilters}>
-                  <Text style={[styles.link, { color: colors.accent }]}>
+                  <ThemedText style={[styles.link, { color: colors.accent }]}>
                     {t('search.clearFilters')}
-                  </Text>
+                  </ThemedText>
                 </Pressable>
               ) : null}
             </View>
@@ -507,9 +527,9 @@ const styles = StyleSheet.create({
   saveRow: { flexDirection: 'row', gap: spacing.sm, alignItems: 'center' },
   saveInput: { flex: 1 },
   rowBetween: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  section: { fontSize: 13, fontWeight: '600' },
+  section: { fontSize: 13 },
   filterBlock: { gap: spacing.xs },
-  filterLabel: { fontSize: 12, fontWeight: '600' },
+  filterLabel: { fontSize: 12 },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   chip: {
     borderWidth: StyleSheet.hairlineWidth,
@@ -517,8 +537,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
   },
-  chipText: { fontSize: 13, fontWeight: '600' },
-  link: { fontSize: 14, fontWeight: '600' },
+  chipText: { fontSize: 13 },
+  link: { fontSize: 14 },
   message: { fontSize: 15, textAlign: 'center' },
   error: { fontSize: 14 },
   center: { alignItems: 'center', gap: spacing.md, paddingVertical: spacing.xl },

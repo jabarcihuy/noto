@@ -5,7 +5,6 @@ import {
   FlatList,
   Pressable,
   StyleSheet,
-  Text,
   TextInput,
   useColorScheme,
   View,
@@ -17,6 +16,7 @@ import { PrimaryButton } from '@/ui/components/primary-button';
 import { t } from '@/ui/i18n';
 import { useAppServices } from '@/ui/providers/app-provider';
 import { getTheme, radius, spacing } from '@/ui/theme/tokens';
+import { ThemedText } from '@/ui/components/themed-text';
 
 type NotebookState =
   | { status: 'loading'; notebooks: Notebook[] }
@@ -75,7 +75,9 @@ export default function NotebooksScreen() {
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: colors.background }]} edges={['top']}>
       <View style={styles.header}>
-        <Text style={[styles.title, { color: colors.text }]}>{t('notebooks.title')}</Text>
+        <ThemedText style={[styles.title, { color: colors.text }]}>
+          {t('notebooks.title')}
+        </ThemedText>
         <View style={styles.createRow}>
           <TextInput
             value={name}
@@ -96,19 +98,23 @@ export default function NotebooksScreen() {
             loading={creating}
           />
         </View>
-        {error ? <Text style={[styles.error, { color: colors.danger }]}>{error}</Text> : null}
+        {error ? (
+          <ThemedText style={[styles.error, { color: colors.danger }]}>{error}</ThemedText>
+        ) : null}
       </View>
 
       {state.status === 'loading' ? (
         <View style={styles.center}>
           <ActivityIndicator color={colors.accent} />
-          <Text style={[styles.message, { color: colors.textMuted }]}>
+          <ThemedText style={[styles.message, { color: colors.textMuted }]}>
             {t('notebooks.loading')}
-          </Text>
+          </ThemedText>
         </View>
       ) : state.status === 'error' ? (
         <View style={styles.center}>
-          <Text style={[styles.message, { color: colors.textMuted }]}>{t('notebooks.error')}</Text>
+          <ThemedText style={[styles.message, { color: colors.textMuted }]}>
+            {t('notebooks.error')}
+          </ThemedText>
           <PrimaryButton
             label={t('common.retry')}
             onPress={() => {
@@ -119,7 +125,9 @@ export default function NotebooksScreen() {
         </View>
       ) : state.notebooks.length === 0 ? (
         <View style={styles.center}>
-          <Text style={[styles.message, { color: colors.textMuted }]}>{t('notebooks.empty')}</Text>
+          <ThemedText style={[styles.message, { color: colors.textMuted }]}>
+            {t('notebooks.empty')}
+          </ThemedText>
         </View>
       ) : (
         <FlatList
@@ -135,7 +143,7 @@ export default function NotebooksScreen() {
                 { borderBottomColor: colors.border, opacity: pressed ? 0.6 : 1 },
               ]}
             >
-              <Text style={[styles.rowTitle, { color: colors.text }]}>{item.name}</Text>
+              <ThemedText style={[styles.rowTitle, { color: colors.text }]}>{item.name}</ThemedText>
             </Pressable>
           )}
         />
@@ -147,7 +155,7 @@ export default function NotebooksScreen() {
 const styles = StyleSheet.create({
   safe: { flex: 1 },
   header: { paddingHorizontal: spacing.lg, paddingTop: spacing.lg, gap: spacing.sm },
-  title: { fontSize: 28, lineHeight: 34, fontWeight: '700' },
+  title: { fontSize: 28, lineHeight: 34 },
   createRow: { flexDirection: 'row', gap: spacing.sm, alignItems: 'center' },
   input: {
     flex: 1,
@@ -160,7 +168,7 @@ const styles = StyleSheet.create({
   error: { fontSize: 14 },
   list: { paddingHorizontal: spacing.lg, paddingBottom: spacing.xl },
   row: { paddingVertical: spacing.md, borderBottomWidth: StyleSheet.hairlineWidth },
-  rowTitle: { fontSize: 16, fontWeight: '600' },
+  rowTitle: { fontSize: 16 },
   center: {
     flex: 1,
     alignItems: 'center',

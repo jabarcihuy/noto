@@ -1,9 +1,10 @@
-import { Pressable, StyleSheet, Text, useColorScheme } from 'react-native';
+import { Pressable, StyleSheet, useColorScheme } from 'react-native';
 
 import { parseSnippet, type SearchResultItem } from '@/features/search';
 import { contentPreview, formatDateTime } from '@/ui/format/date';
 import { t } from '@/ui/i18n';
 import { getTheme, spacing } from '@/ui/theme/tokens';
+import { ThemedText } from '@/ui/components/themed-text';
 
 type SearchResultRowProps = {
   item: SearchResultItem;
@@ -26,28 +27,25 @@ export function SearchResultRow({ item, onPress }: SearchResultRowProps) {
         { borderBottomColor: colors.border, opacity: pressed ? 0.6 : 1 },
       ]}
     >
-      <Text numberOfLines={2} style={[styles.title, { color: colors.text }]}>
+      <ThemedText numberOfLines={2} style={[styles.title, { color: colors.text }]}>
         {note.title.trim().length > 0 ? note.title : t('home.untitled')}
-      </Text>
+      </ThemedText>
       {segments ? (
-        <Text numberOfLines={2} style={[styles.preview, { color: colors.textMuted }]}>
+        <ThemedText numberOfLines={2} style={[styles.preview, { color: colors.textMuted }]}>
           {segments.map((segment, index) => (
-            <Text
-              key={index}
-              style={segment.match ? { color: colors.accent, fontWeight: '700' } : undefined}
-            >
+            <ThemedText key={index} style={segment.match ? { color: colors.accent } : undefined}>
               {segment.text}
-            </Text>
+            </ThemedText>
           ))}
-        </Text>
+        </ThemedText>
       ) : (
-        <Text numberOfLines={2} style={[styles.preview, { color: colors.textMuted }]}>
+        <ThemedText numberOfLines={2} style={[styles.preview, { color: colors.textMuted }]}>
           {preview.length > 0 ? preview : t('home.noContent')}
-        </Text>
+        </ThemedText>
       )}
-      <Text style={[styles.timestamp, { color: colors.textMuted }]}>
+      <ThemedText style={[styles.timestamp, { color: colors.textMuted }]}>
         {formatDateTime(note.updatedAt)}
-      </Text>
+      </ThemedText>
     </Pressable>
   );
 }
@@ -58,7 +56,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     gap: 2,
   },
-  title: { fontSize: 16, fontWeight: '600' },
+  title: { fontSize: 16 },
   preview: { fontSize: 14, lineHeight: 19 },
   timestamp: { fontSize: 12, marginTop: 2 },
 });

@@ -6,7 +6,6 @@ import {
   FlatList,
   Pressable,
   StyleSheet,
-  Text,
   useColorScheme,
   View,
 } from 'react-native';
@@ -15,6 +14,7 @@ import type { Notebook } from '@/features/notebooks/domain/notebook';
 import { t } from '@/ui/i18n';
 import { useAppServices } from '@/ui/providers/app-provider';
 import { getTheme, spacing } from '@/ui/theme/tokens';
+import { ThemedText } from '@/ui/components/themed-text';
 
 type PickerState = {
   notebookId: string | null;
@@ -74,9 +74,9 @@ export default function NotebookPickerScreen() {
       <View style={[styles.flex, { backgroundColor: colors.background }]}>
         {error ? (
           <View style={styles.center}>
-            <Text style={[styles.message, { color: colors.textMuted }]}>
+            <ThemedText style={[styles.message, { color: colors.textMuted }]}>
               {t('notebooks.error')}
-            </Text>
+            </ThemedText>
           </View>
         ) : !state ? (
           <View style={styles.center}>
@@ -99,13 +99,13 @@ export default function NotebookPickerScreen() {
                     { borderBottomColor: colors.border, opacity: pressed ? 0.6 : 1 },
                   ]}
                 >
-                  <Text style={[styles.rowTitle, { color: colors.text }]}>
+                  <ThemedText style={[styles.rowTitle, { color: colors.text }]}>
                     {item ? item.name : t('notebookPicker.none')}
-                  </Text>
+                  </ThemedText>
                   {selected ? (
-                    <Text style={[styles.current, { color: colors.accent }]}>
+                    <ThemedText style={[styles.current, { color: colors.accent }]}>
                       {t('notebookPicker.current')}
-                    </Text>
+                    </ThemedText>
                   ) : null}
                 </Pressable>
               );
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   rowTitle: { fontSize: 16 },
-  current: { fontSize: 13, fontWeight: '600' },
+  current: { fontSize: 13 },
   center: {
     flex: 1,
     alignItems: 'center',

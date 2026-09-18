@@ -7,7 +7,6 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  Text,
   useColorScheme,
   View,
 } from 'react-native';
@@ -25,6 +24,7 @@ import { formatDateTime } from '@/ui/format/date';
 import { t } from '@/ui/i18n';
 import { useAppServices } from '@/ui/providers/app-provider';
 import { getTheme, radius, spacing } from '@/ui/theme/tokens';
+import { ThemedText } from '@/ui/components/themed-text';
 
 type DetailState =
   | { status: 'loading' }
@@ -277,15 +277,21 @@ export default function NoteDetailScreen() {
         {state.status === 'loading' ? (
           <View style={styles.center}>
             <ActivityIndicator color={colors.accent} />
-            <Text style={[styles.message, { color: colors.textMuted }]}>{t('note.loading')}</Text>
+            <ThemedText style={[styles.message, { color: colors.textMuted }]}>
+              {t('note.loading')}
+            </ThemedText>
           </View>
         ) : state.status === 'notFound' ? (
           <View style={styles.center}>
-            <Text style={[styles.message, { color: colors.textMuted }]}>{t('note.notFound')}</Text>
+            <ThemedText style={[styles.message, { color: colors.textMuted }]}>
+              {t('note.notFound')}
+            </ThemedText>
           </View>
         ) : state.status === 'error' ? (
           <View style={styles.center}>
-            <Text style={[styles.message, { color: colors.textMuted }]}>{t('note.error')}</Text>
+            <ThemedText style={[styles.message, { color: colors.textMuted }]}>
+              {t('note.error')}
+            </ThemedText>
             <Pressable
               accessibilityRole="button"
               onPress={() => {
@@ -301,15 +307,15 @@ export default function NoteDetailScreen() {
               }}
               style={[styles.retry, { backgroundColor: colors.accent }]}
             >
-              <Text style={styles.retryLabel}>{t('common.retry')}</Text>
+              <ThemedText style={styles.retryLabel}>{t('common.retry')}</ThemedText>
             </Pressable>
           </View>
         ) : (
           <>
             <ScrollView contentContainerStyle={styles.content}>
-              <Text style={[styles.noteTitle, { color: colors.text }]}>
+              <ThemedText style={[styles.noteTitle, { color: colors.text }]}>
                 {state.note.title.trim() || t('home.untitled')}
-              </Text>
+              </ThemedText>
               {state.note.content.trim().length > 0 ? (
                 <NoteContent
                   content={state.note.content}
@@ -318,17 +324,17 @@ export default function NoteDetailScreen() {
                   style={[styles.body, { color: colors.text }]}
                 />
               ) : (
-                <Text style={[styles.message, { color: colors.textMuted }]}>
+                <ThemedText style={[styles.message, { color: colors.textMuted }]}>
                   {t('home.noContent')}
-                </Text>
+                </ThemedText>
               )}
               <View style={styles.timestamps}>
-                <Text style={[styles.timestamp, { color: colors.textMuted }]}>
+                <ThemedText style={[styles.timestamp, { color: colors.textMuted }]}>
                   {t('note.created')}: {formatDateTime(state.note.createdAt)}
-                </Text>
-                <Text style={[styles.timestamp, { color: colors.textMuted }]}>
+                </ThemedText>
+                <ThemedText style={[styles.timestamp, { color: colors.textMuted }]}>
                   {t('note.updated')}: {formatDateTime(state.note.updatedAt)}
-                </Text>
+                </ThemedText>
               </View>
 
               <View style={[styles.organization, { borderTopColor: colors.border }]}>
@@ -342,26 +348,26 @@ export default function NoteDetailScreen() {
                   }
                   style={styles.orgRow}
                 >
-                  <Text style={[styles.orgLabel, { color: colors.textMuted }]}>
+                  <ThemedText style={[styles.orgLabel, { color: colors.textMuted }]}>
                     {t('note.notebook')}
-                  </Text>
-                  <Text style={[styles.orgValue, { color: colors.accent }]}>
+                  </ThemedText>
+                  <ThemedText style={[styles.orgValue, { color: colors.accent }]}>
                     {state.notebook ? state.notebook.name : t('note.noneNotebook')}
-                  </Text>
+                  </ThemedText>
                 </Pressable>
 
                 <View style={styles.orgRow}>
-                  <Text style={[styles.orgLabel, { color: colors.textMuted }]}>
+                  <ThemedText style={[styles.orgLabel, { color: colors.textMuted }]}>
                     {t('note.tags')}
-                  </Text>
+                  </ThemedText>
                   {state.tags.length === 0 ? (
-                    <Text style={[styles.orgValue, { color: colors.textMuted }]}>
+                    <ThemedText style={[styles.orgValue, { color: colors.textMuted }]}>
                       {t('tags.none')}
-                    </Text>
+                    </ThemedText>
                   ) : (
                     <View style={styles.tagChips}>
                       {state.tags.map((tag) => (
-                        <Text
+                        <ThemedText
                           key={tag.id}
                           style={[
                             styles.tagChip,
@@ -369,7 +375,7 @@ export default function NoteDetailScreen() {
                           ]}
                         >
                           #{tag.displayName}
-                        </Text>
+                        </ThemedText>
                       ))}
                     </View>
                   )}
@@ -381,7 +387,9 @@ export default function NoteDetailScreen() {
                     router.push({ pathname: '/note/[id]/tags', params: { id: state.note.id } })
                   }
                 >
-                  <Text style={[styles.manage, { color: colors.accent }]}>{t('tags.manage')}</Text>
+                  <ThemedText style={[styles.manage, { color: colors.accent }]}>
+                    {t('tags.manage')}
+                  </ThemedText>
                 </Pressable>
               </View>
 
@@ -397,13 +405,13 @@ export default function NoteDetailScreen() {
               />
 
               <View style={[styles.backlinks, { borderTopColor: colors.border }]}>
-                <Text style={[styles.backlinksTitle, { color: colors.textMuted }]}>
+                <ThemedText style={[styles.backlinksTitle, { color: colors.textMuted }]}>
                   {t('link.backlinks')}
-                </Text>
+                </ThemedText>
                 {state.backlinks.length === 0 ? (
-                  <Text style={[styles.message, { color: colors.textMuted }]}>
+                  <ThemedText style={[styles.message, { color: colors.textMuted }]}>
                     {t('link.backlinksEmpty')}
-                  </Text>
+                  </ThemedText>
                 ) : (
                   state.backlinks.map((source) => (
                     <Pressable
@@ -414,12 +422,12 @@ export default function NoteDetailScreen() {
                       }
                       style={[styles.backlinkRow, { borderColor: colors.border }]}
                     >
-                      <Text style={[styles.backlinkTitle, { color: colors.text }]}>
+                      <ThemedText style={[styles.backlinkTitle, { color: colors.text }]}>
                         {source.title.trim() || t('home.untitled')}
-                      </Text>
-                      <Text style={[styles.backlinkMeta, { color: colors.textMuted }]}>
+                      </ThemedText>
+                      <ThemedText style={[styles.backlinkMeta, { color: colors.textMuted }]}>
                         {formatDateTime(source.updatedAt)}
-                      </Text>
+                      </ThemedText>
                     </Pressable>
                   ))
                 )}
@@ -437,7 +445,7 @@ export default function NoteDetailScreen() {
                 }
                 style={[styles.action, { backgroundColor: colors.accent }]}
               >
-                <Text style={styles.actionLabel}>{t('note.edit')}</Text>
+                <ThemedText style={styles.actionLabel}>{t('note.edit')}</ThemedText>
               </Pressable>
               <Pressable
                 accessibilityRole="button"
@@ -448,16 +456,16 @@ export default function NoteDetailScreen() {
                   { backgroundColor: colors.accentMuted, opacity: exporting ? 0.5 : 1 },
                 ]}
               >
-                <Text style={[styles.actionLabel, { color: colors.accent }]}>
+                <ThemedText style={[styles.actionLabel, { color: colors.accent }]}>
                   {exporting ? t('editor.saving') : t('export.action')}
-                </Text>
+                </ThemedText>
               </Pressable>
               <Pressable
                 accessibilityRole="button"
                 onPress={remove}
                 style={[styles.action, { backgroundColor: colors.danger }]}
               >
-                <Text style={styles.actionLabel}>{t('note.delete')}</Text>
+                <ThemedText style={styles.actionLabel}>{t('note.delete')}</ThemedText>
               </Pressable>
             </View>
           </>
@@ -470,7 +478,7 @@ export default function NoteDetailScreen() {
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   content: { padding: spacing.lg, gap: spacing.md, paddingBottom: spacing.xl },
-  noteTitle: { fontSize: 22, lineHeight: 28, fontWeight: '600' },
+  noteTitle: { fontSize: 22, lineHeight: 28 },
   body: { fontSize: 16, lineHeight: 24 },
   timestamps: { gap: 2, marginTop: spacing.md },
   timestamp: { fontSize: 12 },
@@ -481,25 +489,24 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   orgRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
-  orgLabel: { fontSize: 13, fontWeight: '600', width: 84 },
-  orgValue: { fontSize: 14, fontWeight: '600' },
+  orgLabel: { fontSize: 13, width: 84 },
+  orgValue: { fontSize: 14 },
   tagChips: { flex: 1, flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   tagChip: {
     fontSize: 13,
-    fontWeight: '600',
     borderRadius: radius.sm,
     paddingHorizontal: spacing.sm,
     paddingVertical: 4,
     overflow: 'hidden',
   },
-  manage: { fontSize: 14, fontWeight: '600' },
+  manage: { fontSize: 14 },
   backlinks: {
     marginTop: spacing.lg,
     paddingTop: spacing.md,
     borderTopWidth: StyleSheet.hairlineWidth,
     gap: spacing.sm,
   },
-  backlinksTitle: { fontSize: 13, fontWeight: '600' },
+  backlinksTitle: { fontSize: 13 },
   backlinkRow: {
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: radius.sm,
@@ -507,7 +514,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
     gap: 2,
   },
-  backlinkTitle: { fontSize: 15, fontWeight: '600' },
+  backlinkTitle: { fontSize: 15 },
   backlinkMeta: { fontSize: 12 },
   center: {
     flex: 1,
@@ -524,7 +531,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: spacing.xl,
   },
-  retryLabel: { color: '#FFFFFF', fontSize: 16, fontWeight: '600' },
+  retryLabel: { color: '#FFFFFF', fontSize: 16 },
   actions: {
     flexDirection: 'row',
     gap: spacing.md,
@@ -538,5 +545,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  actionLabel: { color: '#FFFFFF', fontSize: 16, fontWeight: '600' },
+  actionLabel: { color: '#FFFFFF', fontSize: 16 },
 });

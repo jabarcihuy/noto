@@ -1,15 +1,16 @@
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, Text, useColorScheme, View } from 'react-native';
+import { FlatList, StyleSheet, View, useColorScheme } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { Note } from '@/features/notes/domain/note';
 import { NoteRow } from '@/ui/components/note-row';
 import { PrimaryButton } from '@/ui/components/primary-button';
+import { ThemedText } from '@/ui/components/themed-text';
 import { toError } from '@/ui/errors';
 import { t } from '@/ui/i18n';
 import { useAppServices } from '@/ui/providers/app-provider';
-import { getTheme, spacing } from '@/ui/theme/tokens';
+import { getTheme, radius, spacing } from '@/ui/theme';
 
 type HomeState =
   | { status: 'loading'; notes: Note[] }
@@ -56,44 +57,106 @@ export default function HomeScreen() {
     router.push('/capture');
   }, []);
 
-  return (
-    <SafeAreaView style={[styles.safe, { backgroundColor: colors.background }]} edges={['top']}>
-      <View style={styles.header}>
-        <Text style={[styles.title, { color: colors.text }]}>{t('home.title')}</Text>
-        <PrimaryButton label={t('home.capture')} onPress={openCapture} />
-        <PrimaryButton
-          label={t('home.captureTemplate')}
-          variant="secondary"
-          onPress={() => router.push('/templates')}
-        />
+  const header = (
+    <View style={styles.header}>
+      <View style={styles.titleBlock}>
+        <ThemedText variant="display" color={colors.text}>
+          {t('home.title')}
+        </ThemedText>
+        <ThemedText variant="subhead" color={colors.textMuted}>
+          {t('home.tagline')}
+        </ThemedText>
+      </View>
+
+      <PrimaryButton label={t('home.capture')} onPress={openCapture} />
+
+      <View style={styles.secondaryRow}>
         <PrimaryButton
           label={t('home.captureUrl')}
           variant="secondary"
+          style={styles.secondaryButton}
           onPress={() => router.push({ pathname: '/capture', params: { mode: 'url' } })}
         />
-        <Text style={[styles.section, { color: colors.textMuted }]}>{t('home.recent')}</Text>
+        <PrimaryButton
+          label={t('home.captureTemplate')}
+          variant="secondary"
+          style={styles.secondaryButton}
+          onPress={() => router.push('/templates')}
+        />
       </View>
 
+      <View style={styles.sectionRow}>
+        <ThemedText variant="overline" color={colors.textFaint}>
+          {t('home.recent')}
+        </ThemedText>
+        {state.notes.length > 0 ? (
+          <ThemedText variant="caption" color={colors.textFaint}>
+            {String(state.notes.length)}
+          </ThemedText>
+        ) : null}
+      </View>
+    </View>
+  );
+
+  return (
+    <SafeAreaView style={[styles.safe, { backgroundColor: colors.background }]} edges={['top']}>
       {state.status === 'loading' ? (
-        <View style={styles.center}>
-          <ActivityIndicator color={colors.accent} />
-          <Text style={[styles.message, { color: colors.textMuted }]}>{t('home.loading')}</Text>
-        </View>
+        <>
+          {header}
+          <View style={styles.center}>
+            <ThemedText variant="subhead" color={colors.textMuted}>
+              {t('home.loading')}
+            </ThemedText>
+          </View>
+        </>
       ) : state.status === 'error' ? (
-        <View style={styles.center}>
-          <Text style={[styles.message, { color: colors.textMuted }]}>{t('home.error')}</Text>
-          <PrimaryButton label={t('common.retry')} onPress={retry} />
-        </View>
+        <>
+          {header}
+          <View style={styles.center}>
+            <ThemedText variant="subhead" color={colors.textMuted} style={styles.centerText}>
+              {t('home.error')}
+            </ThemedText>
+            <PrimaryButton label={t('common.retry')} onPress={retry} />
+          </View>
+        </>
       ) : state.notes.length === 0 ? (
-        <View style={styles.center}>
-          <Text style={[styles.message, { color: colors.textMuted }]}>{t('home.empty')}</Text>
-          <PrimaryButton label={t('home.emptyAction')} onPress={openCapture} />
-        </View>
+        <>
+          {header}
+          <View style={styles.center}>
+            <View style={[styles.emptyIcon, { backgroundColor: colors.accentMuted }]}>
+              <View style={[styles.emptyLine, { backgroundColor: colors.accent }]} />
+              <View
+                style={[
+                  styles.emptyLine,
+                  styles.emptyLineShort,
+                  { backgroundColor: colors.accent },
+                ]}
+              />
+              <View
+                style={[
+                  styles.emptyLine,
+                  styles.emptyLineShorter,
+                  { backgroundColor: colors.accent },
+                ]}
+              />
+            </View>
+            <ThemedText variant="heading" color={colors.text} style={styles.centerText}>
+              {t('home.emptyTitle')}
+            </ThemedText>
+            <ThemedText variant="subhead" color={colors.textMuted} style={styles.centerText}>
+              {t('home.empty')}
+            </ThemedText>
+            <PrimaryButton label={t('home.emptyAction')} onPress={openCapture} />
+          </View>
+        </>
       ) : (
         <FlatList
           data={state.notes}
           keyExtractor={(note) => note.id}
           contentContainerStyle={styles.list}
+          contentInsetAdjustmentBehavior="automatic"
+          ListHeaderComponent={header}
+          keyboardShouldPersistTaps="handled"
           renderItem={({ item }) => (
             <NoteRow
               note={item}
@@ -109,9 +172,17 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   safe: { flex: 1 },
   header: { paddingHorizontal: spacing.lg, paddingTop: spacing.lg, gap: spacing.md },
-  title: { fontSize: 28, lineHeight: 34, fontWeight: '700' },
-  section: { fontSize: 15, fontWeight: '600', marginTop: spacing.sm },
-  list: { paddingHorizontal: spacing.lg, paddingBottom: spacing.xl },
+  titleBlock: { gap: spacing.xs },
+  secondaryRow: { flexDirection: 'row', gap: spacing.sm },
+  secondaryButton: { flex: 1 },
+  sectionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: spacing.md,
+    marginBottom: spacing.xs,
+  },
+  list: { paddingHorizontal: spacing.sm, paddingBottom: spacing.xxl },
   center: {
     flex: 1,
     alignItems: 'center',
@@ -119,5 +190,18 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     padding: spacing.xl,
   },
-  message: { fontSize: 15, textAlign: 'center' },
+  centerText: { textAlign: 'center' },
+  emptyIcon: {
+    width: 72,
+    height: 72,
+    borderRadius: radius.lg,
+    borderCurve: 'continuous',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 5,
+    marginBottom: spacing.xs,
+  },
+  emptyLine: { width: 34, height: 3.5, borderRadius: radius.full },
+  emptyLineShort: { width: 26 },
+  emptyLineShorter: { width: 18 },
 });
